@@ -1,4 +1,6 @@
 
+## Directory Setup
+
 1. On the SSH window on your team laptop, enter the following commands
 
 
