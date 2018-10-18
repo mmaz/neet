@@ -1,7 +1,7 @@
 To find if your drone supports compressed camera feeds:
 
 0. Start `roscore`
-1. Start `aero-optical-flow`
+1. Start optical flow: `sudo -E ~/bwsi-uav/catkin-ws/src/aero-optical-flow/build/aero-optical-flow`
 2. `$ rostopic list | grep compressed`
 
 If you don't see `/aero_downward_camera/image/compressed` in the results you will need to install compressed transport support:
