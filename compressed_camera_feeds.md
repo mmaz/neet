@@ -8,7 +8,7 @@ If you don't see `/aero_downward_camera/image/compressed` in the results you wil
 
 `sudo apt-get install ros-kinetic-image-transport-plugins`
 
-then **restart your camera feed** by restarting the `aero-optical-flow` binary.
+then **restart your camera feed** by restarting the `aero-optical-flow` binary (step 1 above).
 
 To record a compressed downward camera feed:
 
