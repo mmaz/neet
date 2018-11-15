@@ -1,12 +1,14 @@
-Create or edit a file in the `.ssh` directory called `config`, i.e.,
+Create or edit a file in the `.ssh/` directory inside your home directory, called `config`:
 
-`$ nano ~/.ssh/config`
+`$ nano ~/.ssh/config` or `$ gedit ~/.ssh/config`or `$ vi ~/.ssh/config` (or whichever text editor you are comfortable with)
 
-and add the following lines, replacing `PATH_TO_HOME` with the correct path for your platform:
+You will need to add *two* lines to the file, and you will need to replace `PATH_TO_HOME` with the correct path for your platform:
 
 * on linux, `/home/YOURTEAMNAME/.ssh/`
 * on mac, `/Users/YOURUSERNAME/.ssh`
 * windows, (TODO)
+
+Add the following two lines:
 
 ```
 ControlMaster auto
