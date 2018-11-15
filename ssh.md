@@ -4,7 +4,7 @@ Create or edit a file in the `.ssh/` directory inside your home directory, calle
 
 You will need to add *two* lines to the file, and you will need to replace `PATH_TO_HOME` with the correct path for your platform:
 
-* on linux, `/home/YOURTEAMNAME/.ssh/`
+* on linux, `/home/YOURTEAMNAME/.ssh/` (or your username, if you are not using a team laptop)
 * on mac, `/Users/YOURUSERNAME/.ssh`
 * windows, (TODO)
 
