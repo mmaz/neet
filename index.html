@@ -57,6 +57,27 @@
             
     <li class="toctree-l2"><a href="#mit-neet-spring-2019">MIT NEET Spring 2019</a></li>
     
+        <ul>
+        
+            <li><a class="toctree-l3" href="#pilotnet-lab">PilotNet Lab</a></li>
+        
+            <li><a class="toctree-l3" href="#introduction">Introduction</a></li>
+        
+            <li><a class="toctree-l3" href="#training">Training:</a></li>
+        
+            <li><a class="toctree-l3" href="#running-inference">Running inference</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#data-collection">Data collection</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#image-augmentation">Image Augmentation</a></li>
+        
+        </ul>
+    
 
     </ul>
 	    </li>
@@ -104,6 +125,146 @@
             <div class="section">
               
                 <h1 id="mit-neet-spring-2019">MIT NEET Spring 2019</h1>
+<h2 id="pilotnet-lab">PilotNet Lab</h2>
+<p><strong>Objective:</strong> Vision-only navigation of a racing circuit, based on:</p>
+<ul>
+<li><a href="https://devblogs.nvidia.com/deep-learning-self-driving-cars/">https://devblogs.nvidia.com/deep-learning-self-driving-cars/</a> Nvidia's blog post introducing the concept</li>
+<li><a href="https://arxiv.org/pdf/1704.07911.pdf">https://arxiv.org/pdf/1704.07911.pdf</a> Nvidia's PilotNet paper</li>
+<li><a href="https://github.com/naokishibuya/car-behavioral-cloning">https://github.com/naokishibuya/car-behavioral-cloning</a> (using Udacity's simulator)</li>
+</ul>
+<h2 id="introduction">Introduction</h2>
+<p>This lab provides an introduction to end-to-end imitation learning for vision-only navigation of a racetrack. There are two components to this lab. First, we will learn how to train a model (specifically, a <em>convolutional neural network</em>) in simulation. This will involve driving a simulated car around a virtual racetrack and collecting camera data from the rendered game engine. Then we will train another model using camera data and steering angles collected from the RACECAR platform in a real-world environment, Stata basement.</p>
+<h3 id="in-simulation">In simulation:</h3>
+<p><img alt="" src="img/lake_track.png" /></p>
+<p><img alt="" src="img/jungle_track.png" /></p>
+<h3 id="in-stata-basement">In Stata basement:</h3>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/tQCZjKa3Bpw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<h2 id="training">Training:</h2>
+<p>We will use three cameras mounted on the virtual and real-world RACECAR to collect training data. Excerpting from <a href="https://devblogs.nvidia.com/deep-learning-self-driving-cars/">Nvidia's blog post</a>:</p>
+<blockquote>
+<p><em>Training data contains single images sampled from the video, paired with the corresponding steering command (1/r). Training with data from only the human driver is not sufficient; the network must also learn how to recover from any mistakes, or the car will slowly drift off the road. The training data is therefore augmented with additional images that show the car in different shifts from the center of the lane and rotations from the direction of the road.</em></p>
+<p><em>The images for two specific off-center shifts can be obtained from the left and the right cameras. Additional shifts between the cameras and all rotations are simulated through viewpoint transformation of the image from the nearest camera. Precise viewpoint transformation requires 3D scene knowledge which we don’t have, so we approximate the transformation by assuming all points below the horizon are on flat ground, and all points above the horizon are infinitely far away. This works fine for flat terrain</em></p>
+</blockquote>
+<p><img alt="Training" src="https://devblogs.nvidia.com/parallelforall/wp-content/uploads/2016/08/training-624x291.png" /></p>
+<p>Let us take a closer look at a Keras implementation of the CNN architecture:</p>
+<p><img alt="Architecture" src="https://devblogs.nvidia.com/parallelforall/wp-content/uploads/2016/08/cnn-architecture-624x890.png" /></p>
+<p>Using TensorFlow's <em>Keras API</em>, let us look at an implementation of the above network in code:</p>
+<div class="admonition note">
+<p class="admonition-title">Exercise</p>
+<p>How many parameters does each layer represent? What is the effect of changing the input size on the total number of parameters in the network? Why? </p>
+<p>Hint: use <code>model.summary()</code> as a way to explore the effect of changing input size.</p>
+</div>
+<p>For more on TensorFlow's Keras API, <a href="https://tensorflow.org">click here</a>.</p>
+<pre><code class="python">from tensorflow.keras.layers import Lambda, Conv2D, MaxPooling2D, Dropout, Dense, Flatten
+from tensorflow.keras.models import Sequential
+
+# you will need to crop or shrink images to the dimensions you choose here:
+IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_CHANNELS = 66, 200, 3
+INPUT_SHAPE = (IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_CHANNELS)
+
+def build_model(dropout_rate=0.5):
+    model = Sequential()
+    model.add(Lambda(lambda x: x/127.5-1.0, input_shape=INPUT_SHAPE)) #normalizes image data
+    model.add(Conv2D(24, (5,5), strides=(2, 2), activation='elu'))
+    model.add(Conv2D(36, (5,5), strides=(2, 2), activation='elu'))
+    model.add(Conv2D(48, (5,5), strides=(2, 2), activation='elu'))
+    model.add(Conv2D(64, (3,3), activation='elu'))
+    model.add(Conv2D(64, (3,3), activation='elu'))
+    model.add(Dropout(dropout_rate)) 
+    model.add(Flatten())
+    model.add(Dense(100, activation='elu'))
+    model.add(Dense(50, activation='elu'))
+    model.add(Dense(10, activation='elu'))
+    model.add(Dense(1))
+    model.summary()
+    return model
+</code></pre>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Note that Keras will disable <strong>Dropout regularization</strong> at inference time. <a href="https://stackoverflow.com/questions/47787011/how-to-disable-dropout-while-prediction-in-keras">See here</a> for details.</p>
+</div>
+<h3 id="servo-histogram">Servo histogram</h3>
+<p>It is important to ensure the train/test split of the data you have collected have similar driving condition represented. For instance, here is the histogram of servo angles in the training and testing data used above:</p>
+<p><img alt="" src="img/basement_histogram_servo.png" /></p>
+<h3 id="extending-to-more-general-environments">Extending to more general environments</h3>
+<p>It is possible to train a network with driving data from public roads, in order to experiment with how it affects the performance of your car in Stata basement.</p>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>Obviously, you should not test anything on public roads yourself, either on a RACECAR or any other car. Be safe and responsible!</p>
+</div>
+<p><img alt="" src="img/sc1.jpg" />
+<img alt="" src="img/sc2.jpg" />
+<img alt="" src="img/sc3.jpg" />
+<img alt="" src="img/scpred.png" /></p>
+<h2 id="running-inference">Running inference</h2>
+<p>The following script will load a pre-trained model and drive the car through Stata basement:</p>
+<pre><code class="bash">$ # Optional -- mount SSD for data collection
+$ # sudo mount -t auto /dev/sda1 /media/ssd/
+$ roslaunch racecar_bringup base.launch teleop:=true
+$ roslaunch zed_wrapper zed.launch
+$ cd ~/pilotnet # or wherever you have basement-006.h5 weights stored
+$ python pilotnet_drive.py
+</code></pre>
+
+<h1 id="data-collection">Data collection</h1>
+<p>You will need to save images to the car's SSD:</p>
+<p>In <code>zed.launch</code> (<code>$ roscd zed_wrapper</code>):</p>
+<pre><code class="xml">    &lt;arg name=&quot;resolution&quot;           default=&quot;3&quot; /&gt; &lt;!--0=RESOLUTION_HD2K, 1=RESOLUTION_HD1080, 2=RESOLUTION_HD720, 3=RESOLUTION_VGA --&gt;
+    &lt;arg name=&quot;frame_rate&quot;           default=&quot;15&quot; /&gt;
+</code></pre>
+
+<p>In <strong>TODO</strong> <code>launch/record_bag.launch</code>:</p>
+<pre><code class="xml">args=&quot;--output-prefix $(arg saveas) $(arg extra_args) /joy /racecar_drive /vesc/sensors/core /velodyne_packets /scan /imu/data_raw /imu/data /imu/mag /zed/left/image_raw_color/compressed /zed/right/image_raw_color/compressed /zed/left/camera_info /zed/right/camera_info&quot; /&gt;
+</code></pre>
+
+<p>Then, to record the rosbag <strong>TODO</strong>: </p>
+<pre><code class="bash">$ roslaunch racecar_bringup record_bag.launch saveas:=/media/ssd/rosbags/
+</code></pre>
+
+<h3 id="image-augmentation">Image Augmentation</h3>
+<p>Example transformations:</p>
+<p><strong>Center Image</strong></p>
+<p><img alt="Center Image" src="img/center.png" /></p>
+<p><strong>Left and right Images</strong></p>
+<pre><code class="python">def choose_image(data_dir, center, left, right, steering_angle):
+    &quot;&quot;&quot;
+    Randomly choose an image from the center, left or right, and adjust
+    the steering angle.
+    &quot;&quot;&quot;
+    choice = np.random.choice(3)
+    if choice == 0:
+        return load_image(data_dir, left), steering_angle + 0.2
+    elif choice == 1:
+        return load_image(data_dir, right), steering_angle - 0.2
+    return load_image(data_dir, center), steering_angle
+</code></pre>
+
+<p><img alt="Left Image" src="img/left.png" /> <img alt="Right Image" src="img/right.png" /></p>
+<p><strong>Flipped Image</strong></p>
+<pre><code class="python">    if np.random.rand() &lt; 0.5:
+        image = cv2.flip(image, 1)
+        steering_angle = -steering_angle
+    return image, steering_angle
+</code></pre>
+
+<p><img alt="Flipped Image" src="img/flip.png" /></p>
+<p><strong>Translated Image</strong></p>
+<pre><code class="python">def random_translate(image, steering_angle, range_x, range_y):
+    &quot;&quot;&quot;
+    Randomly shift the image virtially and horizontally (translation).
+    &quot;&quot;&quot;
+    trans_x = range_x * (np.random.rand() - 0.5)
+    trans_y = range_y * (np.random.rand() - 0.5)
+    steering_angle += trans_x * 0.002
+    trans_m = np.float32([[1, 0, trans_x], [0, 1, trans_y]])
+    height, width = image.shape[:2]
+    image = cv2.warpAffine(image, trans_m, (width, height))
+    return image, steering_angle
+</code></pre>
+
+<p><img alt="Translated Image" src="img/trans.png" /></p>
               
             </div>
           </div>
@@ -154,5 +315,5 @@
 
 <!--
 MkDocs version : 1.0.4
-Build Date UTC : 2019-03-04 17:12:06
+Build Date UTC : 2019-03-04 20:03:11
 -->
