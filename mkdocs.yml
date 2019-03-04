@@ -1,0 +1,12 @@
+site_name: NEET Spring 2019
+theme: 
+    name: readthedocs
+    highlightjs: true
+    hljs_languages:
+        - shell
+        - python
+
+site_author: Mark Mazumder
+copyright: "© 2019 Mark Mazumder"
+markdown_extensions:
+- admonition

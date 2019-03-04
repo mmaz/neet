@@ -1,3 +1,53 @@
+# MIT NEET Fall 2018
+
+## Multiplex SSH
+
+This is highly recommended for connecting to the drones:
+
+Create or edit a file in the `.ssh/` directory inside your home directory, called `config`:
+
+`$ nano ~/.ssh/config` or `$ gedit ~/.ssh/config`or `$ vi ~/.ssh/config` (or whichever text editor you are comfortable with)
+
+You will need to add *two* lines to the file, and you will need to replace `PATH_TO_HOME` with the correct path for your platform:
+
+* on linux, `/home/YOURTEAMNAME/.ssh/` (or your username, if you are not using a team laptop)
+* on mac, `/Users/YOURUSERNAME/.ssh`
+* windows, (TODO)
+
+Add the following two lines (**Remember:** change `PATH_TO_HOME` as specified above):
+
+```
+ControlMaster auto
+ControlPath PATH_TO_HOME/.ssh/ssh_mux_%h_%p_%r
+```
+
+**Important** - remember to start your **FIRST** SSH connection with `-Y` if you plan to use xforwarding (e.g., for `rqt_image_view`)
+
+
+## Directory Setup
+
+ These instructions replace [this section](https://bwsi-uav.github.io/website/student_drone_setup.html#Directory-Setup) on the website.
+
+On the SSH window on your team laptop, enter the following commands
+
+```bash
+cd ~
+cd ~/bwsi-uav/catkin_ws/src
+git clone https://github.com/BWSI-UAV/aero_control.git
+cd aero_control
+git remote add upstream https://github.com/BWSI-UAV/aero_control.git 
+cd ~/bwsi-uav
+git clone https://github.com/BWSI-UAV/laboratory.git
+cd laboratory
+git remote add upstream https://github.com/BWSI-UAV/laboratory.git 
+cd ~/bwsi-uav
+git clone https://github.com/BWSI-UAV/documents.git
+cd documents
+git remote add upstream https://github.com/BWSI-UAV/documents.git 
+```
+
+## Compressed Camera Feeds
+
 To find if your drone supports compressed camera feeds:
 
 0. Start `roscore`

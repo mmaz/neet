@@ -1,6 +1,7 @@
+Issues and pull-requests welcome!
 
-* Click [here](https://github.com/mmaz/neet/blob/master/compressed_camera_feeds.md) for the compressed camera topic tutorial.
-* Click [here](https://github.com/mmaz/neet/blob/master/resources.md) for a list of useful resources and tutorials
-* Click [here](https://github.com/mmaz/neet/blob/master/dirsetup.md) for **Directory Setup** instructions, replacing [this section](https://bwsi-uav.github.io/website/student_drone_setup.html#Directory-Setup) on the website
+You can [install MkDocs](https://www.mkdocs.org/#installation) to view documentation locally:
 
-
+```bash
+$ mkdocs serve
+```
