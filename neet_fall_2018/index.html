@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Mark Mazumder">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>MIT NEET Fall 2018 - NEET Spring 2019</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "MIT NEET Fall 2018";
+    var mkdocs_page_input_path = "neet_fall_2018.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/shell.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/python.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> NEET Spring 2019</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">MIT NEET Spring 2019</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">MIT NEET Fall 2018</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#mit-neet-fall-2018">MIT NEET Fall 2018</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#multiplex-ssh">Multiplex SSH</a></li>
+        
+            <li><a class="toctree-l3" href="#directory-setup">Directory Setup</a></li>
+        
+            <li><a class="toctree-l3" href="#compressed-camera-feeds">Compressed Camera Feeds</a></li>
+        
+        </ul>
+    
+
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../resources/">Resources</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">NEET Spring 2019</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>MIT NEET Fall 2018</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="mit-neet-fall-2018">MIT NEET Fall 2018</h1>
+<h2 id="multiplex-ssh">Multiplex SSH</h2>
+<p>This is highly recommended for connecting to the drones:</p>
+<p>Create or edit a file in the <code>.ssh/</code> directory inside your home directory, called <code>config</code>:</p>
+<p><code>$ nano ~/.ssh/config</code> or <code>$ gedit ~/.ssh/config</code>or <code>$ vi ~/.ssh/config</code> (or whichever text editor you are comfortable with)</p>
+<p>You will need to add <em>two</em> lines to the file, and you will need to replace <code>PATH_TO_HOME</code> with the correct path for your platform:</p>
+<ul>
+<li>on linux, <code>/home/YOURTEAMNAME/.ssh/</code> (or your username, if you are not using a team laptop)</li>
+<li>on mac, <code>/Users/YOURUSERNAME/.ssh</code></li>
+<li>windows, (TODO)</li>
+</ul>
+<p>Add the following two lines (<strong>Remember:</strong> change <code>PATH_TO_HOME</code> as specified above):</p>
+<pre><code>ControlMaster auto
+ControlPath PATH_TO_HOME/.ssh/ssh_mux_%h_%p_%r
+</code></pre>
+
+<p><strong>Important</strong> - remember to start your <strong>FIRST</strong> SSH connection with <code>-Y</code> if you plan to use xforwarding (e.g., for <code>rqt_image_view</code>)</p>
+<h2 id="directory-setup">Directory Setup</h2>
+<p>These instructions replace <a href="https://bwsi-uav.github.io/website/student_drone_setup.html#Directory-Setup">this section</a> on the website.</p>
+<p>On the SSH window on your team laptop, enter the following commands</p>
+<pre><code class="bash">cd ~
+cd ~/bwsi-uav/catkin_ws/src
+git clone https://github.com/BWSI-UAV/aero_control.git
+cd aero_control
+git remote add upstream https://github.com/BWSI-UAV/aero_control.git 
+cd ~/bwsi-uav
+git clone https://github.com/BWSI-UAV/laboratory.git
+cd laboratory
+git remote add upstream https://github.com/BWSI-UAV/laboratory.git 
+cd ~/bwsi-uav
+git clone https://github.com/BWSI-UAV/documents.git
+cd documents
+git remote add upstream https://github.com/BWSI-UAV/documents.git 
+</code></pre>
+
+<h2 id="compressed-camera-feeds">Compressed Camera Feeds</h2>
+<p>To find if your drone supports compressed camera feeds:</p>
+<ol>
+<li>Start <code>roscore</code></li>
+<li>Start optical flow: <code>sudo -E ~/bwsi-uav/catkin-ws/src/aero-optical-flow/build/aero-optical-flow</code></li>
+<li><code>$ rostopic list | grep compressed</code></li>
+</ol>
+<p>If you don't see <code>/aero_downward_camera/image/compressed</code> in the results you will need to install compressed transport support:</p>
+<p><code>sudo apt-get install ros-kinetic-image-transport-plugins</code></p>
+<p>then <strong>restart your camera feed</strong> by restarting the <code>aero-optical-flow</code> binary (step 1 above).</p>
+<p>To record a compressed downward camera feed:</p>
+<pre><code class="bash">$ cd ~/rosbags/ # or wherever you want to store your rosbag
+$ time rosbag record -O downward /aero_downward_camera/image/compressed # -O specifies the filename
+</code></pre>
+
+<p>You can then SCP your rosbag to your team laptop.</p>
+<p>To convert compressed camera messages to OpenCV images, you can't use CVBridge. Here is an OpenCV-specific decoding solution. (You could also use CompressedImage from <code>sensor_msgs.msg</code>):</p>
+<pre><code class="python">from __future__ import print_function
+import cv2
+import numpy as np
+import roslib
+import rospy
+
+from sensor_msgs.msg import CompressedImage
+# We do not use cv_bridge since it does not support CompressedImage
+# from cv_bridge import CvBridge, CvBridgeError
+
+import rosbag
+import os
+
+DEST = &quot;/path/to/folder/to/save/images&quot;
+BAG  = &quot;/path/to/rosbag.bag&quot;
+#your camera topic:
+CAM = '/aero_downward_camera/image/compressed'
+
+def bag2msgs():
+    bag = rosbag.Bag(BAG)
+    if bag is None:
+        raise ValueError(&quot;no bag {}&quot;.format(BAG))
+    msgs = []
+    for topic, msg, t in bag.read_messages(topics=[CAM]):
+        msgs.append(msg)
+    bag.close()
+    print(&quot;MESSAGES: {}&quot;.format(len(msgs)))
+    return msgs
+
+def uncompress(msgs):
+    imgs = []
+    for msg in msgs:
+         #### direct conversion to CV2 ####
+         np_arr = np.fromstring(msg.data, np.uint8)
+         image_np = cv2.imdecode(np_arr, cv2.IMREAD_COLOR) # OpenCV &gt;= 3.0:
+         imgs.append(image_np)
+    return imgs
+
+
+if __name__ == &quot;__main__&quot;:
+
+    if os.listdir(DEST) != []:
+        raise ValueError('need empty directory for dest {}'.format(DEST))
+
+    msgs = bag2msgs()
+    imgs = uncompress(msgs)
+
+    for idx,im in enumerate(imgs):
+        if idx % 50 == 0:
+            print(idx)
+        imname = &quot;frame{:05d}.jpg&quot;.format(idx)
+        cv2.imwrite(DEST + imname, im)
+</code></pre>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../resources/" class="btn btn-neutral float-right" title="Resources">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href=".." class="btn btn-neutral" title="MIT NEET Spring 2019"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>© 2019 Mark Mazumder</p>
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href=".." style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../resources/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+
+</body>
+</html>
