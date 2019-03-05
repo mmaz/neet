@@ -1,10 +1,19 @@
-# Reinforcement Learning in Simulation
+# Reinforcement Learning
 
 ## Introduction
 
 **Objective:** This lab is an introduction to *deep reinforcement learning* as a technique to avoid obstacles and navigate complex environments using only a camera for sensing.
 
 Reinforcement learning is distinct from the imitation learning aproach: here, the robot learns to explore the environment on its own, with almost no information about the world or itself. Through exploration and *reinforcement,* rather than human-provided examples of behavior to imitate, the robot has the potential to learn novel and optimal techniques exceeding the abilities of humans.
+
+This lab will introduce you to using a simulation environment for your robot use as a sandbox for exploration. In particular, we will use **TODO** FlightGoggles from MIT:
+
+## TODO: FlightGoggles
+
+[FlightGoggles](https://github.com/mit-fast/FlightGoggles)
+
+
+## An overview of Reinforcement Learning
 
 From [Spinning Up in Deep RL](https://spinningup.openai.com/en/latest/spinningup/rl_intro.html)
 

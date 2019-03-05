@@ -24,13 +24,27 @@ This lab provides an introduction to end-to-end imitation learning for vision-on
 <iframe width="560" height="315" src="https://www.youtube.com/embed/tQCZjKa3Bpw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 
-## Training:
+## Part 1: Install required Python libraries and the simulation environment
+
+You need a [anaconda](https://www.continuum.io/downloads) or [miniconda](https://conda.io/miniconda.html) to use the environment setting.
+
+```python
+# Use TensorFlow without GPU
+conda env create -f environment.yml 
+
+# Use TensorFlow with GPU
+conda env create -f environment-gpu.yml
+```
+
+## Part 2: Defining the network
 
 We will use three cameras mounted on the virtual and real-world RACECAR to collect training data. Excerpting from [Nvidia's blog post](https://devblogs.nvidia.com/deep-learning-self-driving-cars/):
 
 > *Training data contains single images sampled from the video, paired with the corresponding steering command (1/r). Training with data from only the human driver is not sufficient; the network must also learn how to recover from any mistakes, or the car will slowly drift off the road. The training data is therefore augmented with additional images that show the car in different shifts from the center of the lane and rotations from the direction of the road.*
 >
 > *The images for two specific off-center shifts can be obtained from the left and the right cameras. Additional shifts between the cameras and all rotations are simulated through viewpoint transformation of the image from the nearest camera. Precise viewpoint transformation requires 3D scene knowledge which we don’t have, so we approximate the transformation by assuming all points below the horizon are on flat ground, and all points above the horizon are infinitely far away. This works fine for flat terrain*
+
+### 2A: The Model
 
 ![Training](https://devblogs.nvidia.com/parallelforall/wp-content/uploads/2016/08/training-624x291.png)
 
@@ -77,6 +91,9 @@ def build_model(dropout_rate=0.5):
 
 !!! note
     Note that Keras will disable **Dropout regularization** at inference time. [See here](https://stackoverflow.com/questions/47787011/how-to-disable-dropout-while-prediction-in-keras) for details.
+
+### 2B: Optimization
+
 
 
 ### Servo histogram
