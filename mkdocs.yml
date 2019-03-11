@@ -11,6 +11,8 @@ copyright: "© 2019 Mark Mazumder"
 markdown_extensions:
 - admonition
 - attr_list
+#- toc:
+#    baselevel: 4
 
 # https://github.com/mkdocs/mkdocs/issues/1678
 # https://squidfunk.github.io/mkdocs-material/extensions/pymdown/#arithmatex-mathjax
