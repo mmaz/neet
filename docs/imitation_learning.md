@@ -32,7 +32,12 @@ The CNN architecture we will use is a slightly modified version of PilotNet from
 
 ## Part 1: Install required Python libraries and the simulation environment
 
-You need a [anaconda](https://www.continuum.io/downloads) or [miniconda](https://conda.io/miniconda.html) to use the environment setting.
+### `TensorFlow,` a deep-learning framework
+
+You first need to install [miniconda](https://conda.io/miniconda.html) to install TensorFlow. Download the `Python 3.7` version of miniconda and follow the installation instructions for your platform.
+
+!!! warning
+    We will be using Python 3.7 to define and train the PilotNet CNN model. Once we save a trained model (also known as saving *weights*), we can later import the saved model in a Python 2 ROS environment on the RACECAR. 
 
 ```python
 # Use TensorFlow without GPU
@@ -40,6 +45,28 @@ conda env create -f environment.yml
 
 # Use TensorFlow with GPU
 conda env create -f environment-gpu.yml
+```
+
+### Udacity self-driving-car simulator
+
+Download the **Udacity Term 1** simulator for your platform:
+
+* [Linux](https://s3-us-west-1.amazonaws.com/udacity-selfdrivingcar/Term1-Sim/term1-simulator-linux.zip)
+* [Mac](https://s3-us-west-1.amazonaws.com/udacity-selfdrivingcar/Term1-Sim/term1-simulator-mac.zip)
+* [Windows](https://s3-us-west-1.amazonaws.com/udacity-selfdrivingcar/Term1-Sim/term1-simulator-windows.zip)
+
+The full Unity3D source code of this simulator is available [here](https://github.com/udacity/self-driving-car-sim), as well as other simulators for LIDAR data, waypoint-following, traffic, etc. We will only be using the simulator linked above.
+
+Extract the simulator (which will create a folder called `beta_simulator_linux/`):
+
+```
+$ unzip term1-simulator-linux.zip
+```
+
+On Linux, you will need to make the simulator executable, via the `chmod` command:
+
+```shell
+$ chmod +x ./beta_simulator_linux/beta_simulator.x86_64
 ```
 
 ## Part 2: Defining the network
@@ -103,7 +130,34 @@ def build_model(dropout_rate=0.5):
 
 ## Part 3: Training the Model
 
+Start the simulator. 
+
+
+```shell
+$ ./beta_simulator_linux/beta_simulator.x86_64
+```
+
 ![](img/record.png){: style="width:80%;" }
+
+Once you have configured a folder to record your training data, press **record** again (or `r` as a shortcut) and start to drive the car around (you can use `WASD` or your arrow keys on your keyboard). If this is your first time running the simulator, stop recording after a few seconds, to inspect the saved results.
+
+The simulator will save three camera views from the car: left, center, and right camera views from the bumper of the car, along with the output steering angle. 
+
+!!! warning
+    Recording will generate a lot of files! Too many files in a single directory can cause performance issues, e.g., when generating thumbnails.
+    
+    Once you are ready to record full laps of the course, I recommend keeping each recording session to a few laps of the track, and making multiple new folders. This will help to keep the number of files within each folder low, e.g., `two_laps_run1/`, `two_laps_run2/`, etc, or making a folder for tricky sections of the course, e.g., `bridge_section_run1/`. It is easy to concatenate the resulting CSVs in python (using simple list concatenation with `+`)
+
+In the `training/` folder.
+
+In the `training/IMG/` folder you will find `.jpg` files with the following naming scheme:
+
+| Left | Center | Right |
+| ---- | ------ | ----- |
+| ![](img/left_2019_03_11_12_22_15_385.jpg)    | ![](img/center_2019_03_11_12_22_15_385.jpg)       | ![](img/right_2019_03_11_12_22_15_385.jpg)     |
+|  `left_2019_03_11_12_22_15_385.jpg`    | `center_2019_03_11_12_22_15_385.jpg`    |   `right_2019_03_11_12_22_15_385.jpg`    |
+
+
 
 
 ### Servo histogram
