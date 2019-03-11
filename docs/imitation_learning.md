@@ -26,10 +26,9 @@ We will start by driving a simulated car around a virtual racetrack and collecti
 
 The CNN architecture we will use is a slightly modified version of PilotNet from Nvidia:
 
-* <https://devblogs.nvidia.com/deep-learning-self-driving-cars/> Nvidia's blog post introducing the concept.
-* <https://arxiv.org/pdf/1704.07911.pdf> Nvidia's PilotNet paper
-* <https://github.com/naokishibuya/car-behavioral-cloning> (using Udacity's simulator)
-
+* [Nvidia's blog post introducing the concept and their results](https://devblogs.nvidia.com/deep-learning-self-driving-cars/)
+* [Nvidia's PilotNet paper](https://arxiv.org/pdf/1704.07911.pdf)
+* [Udacity's Unity3D-based Self-Driving-Car Simulator](https://github.com/udacity/self-driving-car-sim) and [Naoki Shibuya's `drive.py` contributions](https://github.com/naokishibuya/car-behavioral-cloning) 
 
 ## Part 1: Install required Python libraries and the simulation environment
 
@@ -58,7 +57,7 @@ We will use three cameras mounted on the virtual and real-world RACECAR to colle
 
 Let us take a closer look at a Keras implementation of the CNN architecture:
 
-![Architecture](https://devblogs.nvidia.com/parallelforall/wp-content/uploads/2016/08/cnn-architecture-624x890.png)
+![Architecture](https://devblogs.nvidia.com/parallelforall/wp-content/uploads/2016/08/cnn-architecture-624x890.png){: style="width:50%;" }
 
 
 Using TensorFlow's *Keras API*, let us look at an implementation of the above network in code:
@@ -104,7 +103,7 @@ def build_model(dropout_rate=0.5):
 
 ## Part 3: Training the Model
 
-![](img/record.png)
+![](img/record.png){: style="width:80%;" }
 
 
 ### Servo histogram
