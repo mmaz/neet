@@ -103,6 +103,8 @@ def build_model(dropout_rate=0.5):
     return model
 ```
 
+As configured above, the PilotNet model expects 200x66 crops from the car's camera.
+
 !!! note "Exercise"
     How many parameters does each layer represent? What is the effect of changing the input size on the total number of parameters in the network? Why? 
     
@@ -186,11 +188,37 @@ In the `training/IMG/` folder you will find `.jpg` files with the following nami
 |  `center_2019_03_11_12_22_15_385.jpg`    | `left_2019_03_11_12_22_15_385.jpg`    |   `right_2019_03_11_12_22_15_385.jpg`    |
 
 
-### Batch Generation and Checkpointing
+### Train/Validation Split
 
-For efficient training on a GPU, multiple examples are sent at once in a *batch* onto the GPU in a single copy operation, and the results of backpropagation are returned from the GPU back to the CPU. 
+!!! danger
+    With enough training time and enough parameters, you can perfectly fit your training data!
 
-You will want to checkpoint your model after each epoch of training. 
+Therefore, you will need to partition your data into training and validation data. Validation helps to ensure your model is not overfitting on the training data. 
+
+```python
+imgs = []
+angles_rad = [] #normalize between -pi to pi or -1 to 1
+
+with open(driving_data) as fh:
+    ########################## #
+    ### TODO: read in the CSV  #
+    ### and fill in the above  #
+    ### lists                  #
+    ############################
+        
+TEST_SIZE_FRACTION = 0.2
+SEED = 56709 # a fixed seed can be convenient for later comparisons
+
+X_train, X_valid, y_train, y_valid = train_test_split(
+    imgs, 
+    angles_rad, 
+    test_size=TEST_SIZE_FRACTION, 
+    random_state=SEED)
+```
+
+### Batch Generation, Checkpointing, and Training Execution
+
+For efficient training on a GPU, multiple examples are sent at once in a *batch* onto the GPU in a single copy operation, and the results of backpropagation are returned from the GPU back to the CPU. You will want to checkpoint your model after each epoch of training. Lastly, `model.fit_generator()` will commence training on your data and display the current loss on your training and testing data:
 
 ```python
 checkpoint = ModelCheckpoint('imitationlearning-{epoch:03d}.h5',
@@ -241,7 +269,7 @@ model.fit_generator(generator=batch_generator(X_train, y_train, batch_size=BATCH
 
 ### Image Augmentation
 
-Example transformations:
+You will want to add some data augmentation to help your model generalize past the specific examples you have collected in the simulator (and on the actual RACECAR). Some example transformations to incorporate:
 
 **Center Image**
 
