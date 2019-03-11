@@ -130,32 +130,50 @@ def build_model(dropout_rate=0.5):
 
 ## Part 3: Training the Model
 
-Start the simulator. 
+### In Simulation
 
+First, create a new folder to store training data from the simulator, e.g. `training/`) and then start the simulator. On linux:
 
 ```shell
 $ ./beta_simulator_linux/beta_simulator.x86_64
 ```
 
+Now launch the **Training** mode and configure the simulator to save data to the folder you created:
+
 ![](img/record.png){: style="width:80%;" }
 
-Once you have configured a folder to record your training data, press **record** again (or `r` as a shortcut) and start to drive the car around (you can use `WASD` or your arrow keys on your keyboard). If this is your first time running the simulator, stop recording after a few seconds, to inspect the saved results.
+Once you have configured a folder to record your training data into, press **record** again (or `r` as a shortcut) and start to drive the car around (you can use `WASD` or your arrow keys on your keyboard). If this is your first time running the simulator, stop recording after a few seconds, to inspect the saved results.
 
-The simulator will save three camera views from the car: left, center, and right camera views from the bumper of the car, along with the output steering angle. 
+The simulator will save three camera views from the car: left, center, and right camera views from the bumper of the car (as jpgs) along with the image filenames and the current steering angle in `driving_log.csv`. 
 
 !!! warning
     Recording will generate a lot of files! Too many files in a single directory can cause performance issues, e.g., when generating thumbnails.
     
     Once you are ready to record full laps of the course, I recommend keeping each recording session to a few laps of the track, and making multiple new folders. This will help to keep the number of files within each folder low, e.g., `two_laps_run1/`, `two_laps_run2/`, etc, or making a folder for tricky sections of the course, e.g., `bridge_section_run1/`. It is easy to concatenate the resulting CSVs in python (using simple list concatenation with `+`)
 
-In the `training/` folder.
+In the `training/` folder (or whichever folder you just created), you should see `driving_log.csv` and another folder `IMG/`.
 
-In the `training/IMG/` folder you will find `.jpg` files with the following naming scheme:
+`driving_log.csv` contains path locations for the three camera views with associated timestamps (sequentially increasing), and the saved steering angle (without a CSV header):
+
+| Center | Left | Right | Steering Angle | Throttle | Brake | Speed | 
+| ------ | ---- | ----- | ----- |----- |----- |----- |
+|  `center_2019_03_11_12_22_15_385.jpg`    | `left_2019_03_11_12_22_15_385.jpg`    |   `right_2019_03_11_12_22_15_385.jpg`  | 0 |  0 | 0 | 0 |
+|  `center_2019_03_11_12_22_15_502.jpg`    | `left_2019_03_11_12_22_15_502.jpg`    |   `right_2019_03_11_12_22_15_502.jpg`    | 0 | 0 | 0 | 0 |
+|  `center_2019_03_11_12_22_15_594.jpg`    | `left_2019_03_11_12_22_15_594.jpg`    |   `right_2019_03_11_12_22_15_594.jpg`    | 0 | 0 | 0 | 0 |
+
+
+
+!!! note
+    If you would like to change some of the parameters, such as the saved image resolution, or even define a new track, you can rebuild and edit the simulator using [Unity3D](https://unity3d.com/).
+
+    See [this section of the Udacity source code](https://github.com/udacity/self-driving-car-sim/blob/522bd7ad6784ad5de1f12f593e00c7d1d79ec34d/Assets/Standard%20Assets/Vehicles/Car/Scripts/CarController.cs#L428) if you are curious how the image files and CSV data are generated.
+
+In the `training/IMG/` folder you will find `.jpg` files with the following naming scheme corresponding to the above CSV:
 
 | Left | Center | Right |
 | ---- | ------ | ----- |
-| ![](img/left_2019_03_11_12_22_15_385.jpg)    | ![](img/center_2019_03_11_12_22_15_385.jpg)       | ![](img/right_2019_03_11_12_22_15_385.jpg)     |
-|  `left_2019_03_11_12_22_15_385.jpg`    | `center_2019_03_11_12_22_15_385.jpg`    |   `right_2019_03_11_12_22_15_385.jpg`    |
+| ![](img/center_2019_03_11_12_22_15_385.jpg)    | ![](img/left_2019_03_11_12_22_15_385.jpg)       | ![](img/right_2019_03_11_12_22_15_385.jpg)     |
+|  `center_2019_03_11_12_22_15_385.jpg`    | `left_2019_03_11_12_22_15_385.jpg`    |   `right_2019_03_11_12_22_15_385.jpg`    |
 
 
 

@@ -1,5 +1,8 @@
 # Reinforcement Learning
 
+To be released soon!
+
+<!--
 ## Introduction
 
 **Objective:** This lab is an introduction to *deep reinforcement learning* as a technique to avoid obstacles and navigate complex environments using only a camera for sensing.
@@ -28,11 +31,15 @@ From [Spinning Up in Deep RL](https://spinningup.openai.com/en/latest/spinningup
 
 $$P(\tau|\pi) = \rho_0 (s_0) \prod_{t=0}^{T-1} P(s_{t+1} | s_t, a_t) \pi(a_t | s_t)$$
 
+-->
+
 
 <!-- The expected return (for whichever measure), denoted by $J(\pi)$ , is then:
 
 $$J(\pi) = \int_{\tau} P(\tau|\pi) R(\tau) = \underE{\tau\sim \pi}{R(\tau)}$$
 -->
+
+<!--
 
 The central optimization problem in RL can then be expressed by
 
@@ -54,3 +61,5 @@ This is a defacto-standard interface for reinforcement learning in simulation, p
 ## The DQN Algorithm
 
 ![dqn](img/dqn.png)
+
+-->
