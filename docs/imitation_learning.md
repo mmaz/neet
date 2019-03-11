@@ -1,27 +1,34 @@
 # Imitation Learning Lab
 
-## PilotNet Lab
-
-**Objective:** Vision-only navigation of a racing circuit, based on:
-
-* <https://devblogs.nvidia.com/deep-learning-self-driving-cars/> Nvidia's blog post introducing the concept
-* <https://arxiv.org/pdf/1704.07911.pdf> Nvidia's PilotNet paper
-* <https://github.com/naokishibuya/car-behavioral-cloning> (using Udacity's simulator)
-
 ## Introduction
 
-This lab provides an introduction to end-to-end imitation learning for vision-only navigation of a racetrack. There are two components to this lab. First, we will learn how to train a model (specifically, a *convolutional neural network*) in simulation. This will involve driving a simulated car around a virtual racetrack and collecting camera data from the rendered game engine. Then we will train another model using camera data and steering angles collected from the RACECAR platform in a real-world environment, Stata basement.
+This lab provides an introduction to **end-to-end imitation learning for vision-only navigation** of a racetrack. Let's break down what this describes:
+
+* We will train a deep learning model - specifically, a *convolutional neural network* (CNN) - to predict steering angles from images.
+* Here, "imitation learning" refers to a branch of machine learning which focuses on imitating behavior from human-provided examples. In our case, we will drive a car around a track several times to provide examples for the CNN to mimic.
+    * We will contrast this with our next lab on "reinforcement learning" where a robot agent is tasked to explore an environment and no examples are given.
+* "Vision-only" refers to using an RGB camera as the only input to the machine learning algorithm.
+    * LIDAR, depth estimation (e.g., from stereo cameras), and vehicle IMU data are not used.
+* "End-to-end learning" is shorthand for machine learning objectives which estimate or predict an output from unprocessed input data. The CNN will learn to regress a steering angle (i.e., an actuation for the Ackermann controller) directly from pixels, without any manual labeling or preprocessing of salient input features (corners, walls, floors, etc.)
+
+We will start by driving a simulated car around a virtual racetrack and collecting camera data from the rendered game engine, as well as our game inputs. We will define a CNN that will predict similar game inputs in order for the car to complete the same track autonomously. Then using the same CNN model definition, we will train the model using camera data and steering angles collected from the RACECAR platform in a real-world environment, the basement in Stata Center.
+
+### In simulation:
+
+| Lake Track  | Jungle Track |
+| ----------- | -----------  |
+| ![](img/lake_track.png) | ![](img/jungle_track.png) |
 
 
-###In simulation:
-
-![](img/lake_track.png)
-
-![](img/jungle_track.png)
-
-###In Stata basement:
+### In Stata basement:
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/tQCZjKa3Bpw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+The CNN architecture we will use is a slightly modified version of PilotNet from Nvidia:
+
+* <https://devblogs.nvidia.com/deep-learning-self-driving-cars/> Nvidia's blog post introducing the concept.
+* <https://arxiv.org/pdf/1704.07911.pdf> Nvidia's PilotNet paper
+* <https://github.com/naokishibuya/car-behavioral-cloning> (using Udacity's simulator)
 
 
 ## Part 1: Install required Python libraries and the simulation environment
