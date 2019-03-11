@@ -102,6 +102,10 @@ def build_model(dropout_rate=0.5):
 ### 2B: Optimization
 
 
+## Part 3: Training the Model
+
+![](img/record.png)
+
 
 ### Servo histogram
 
