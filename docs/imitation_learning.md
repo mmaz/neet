@@ -6,12 +6,12 @@ This lab provides an introduction to **end-to-end imitation learning for vision-
 
 * We will train a deep learning model - specifically, a *convolutional neural network* (CNN) - to predict steering angles from images.
 * Here, "imitation learning" refers to a branch of machine learning which focuses on imitating behavior from human-provided examples. In our case, we will drive a car around a track several times to provide examples for the CNN to mimic.
-    * We will contrast this with our next lab on "reinforcement learning" where a robot agent is tasked to explore an environment and no examples are given.
+    * We will contrast this with our next lab on "reinforcement learning" where a robot agent learns to accomplish a goal via *exploration*, not via examples.
 * "Vision-only" refers to using an RGB camera as the only input to the machine learning algorithm.
-    * LIDAR, depth estimation (e.g., from stereo cameras), and vehicle IMU data are not used.
-* "End-to-end learning" is shorthand for machine learning objectives which estimate or predict an output from unprocessed input data. The CNN will learn to regress a steering angle (i.e., an actuation for the Ackermann controller) directly from pixels, without any manual labeling or preprocessing of salient input features (corners, walls, floors, etc.)
+    * LIDAR, depth, or vehicle IMU data are not used.
+* Here, "end-to-end learning" is shorthand for the CNN's ability to regress a steering angle (i.e., an actuation for the Ackermann controller) directly from unprocessed input data (pixels). We will not need to pre-process input features ourselves, such as extracting corners, walls, floors, or optical flow data. The CNN will learn which features are important, and perform all the steps from *image processing* to *control estimation* itself ("end-to-end", loosely speaking).
 
-We will start by driving a simulated car around a virtual racetrack and collecting camera data from the rendered game engine, as well as our game inputs. We will define a CNN that will predict similar game inputs in order for the car to complete the same track autonomously. Then using the same CNN model definition, we will train the model using camera data and steering angles collected from the RACECAR platform in a real-world environment, the basement in Stata Center.
+We will start by driving a simulated car around a virtual racetrack and collecting camera data from the rendered game engine, as well as our game inputs. We will define a CNN that will predict similar game inputs in order for the car to complete the same track autonomously. Next, we will train the model using camera data and steering angles collected from the RACECAR platform in a real-world environment, the basement in Stata Center, in order for the RACECAR to autonomously drive through the Stata basement.
 
 ### In simulation:
 
@@ -24,7 +24,7 @@ We will start by driving a simulated car around a virtual racetrack and collecti
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/tQCZjKa3Bpw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-The CNN architecture we will use is a slightly modified version of PilotNet from Nvidia:
+This lab and the CNN architecture we will use are based on PilotNet from Nvidia:
 
 * [Nvidia's blog post introducing the concept and their results](https://devblogs.nvidia.com/deep-learning-self-driving-cars/)
 * [Nvidia's PilotNet paper](https://arxiv.org/pdf/1704.07911.pdf)
@@ -39,11 +39,13 @@ You first need to install [miniconda](https://conda.io/miniconda.html) to instal
 !!! warning
     We will be using Python 3.7 to define and train the PilotNet CNN model. Once we save a trained model (also known as saving *weights*), we can later import the saved model in a Python 2 ROS environment on the RACECAR. 
 
+**TBD:**  Links to the environment files (this can be skipped on the server), and potentially switch to rapids/pytorch
+
 ```python
-# Use TensorFlow without GPU
+# Use TensorFlow without a GPU
 conda env create -f environment.yml 
 
-# Use TensorFlow with GPU
+# Use TensorFlow with a GPU
 conda env create -f environment-gpu.yml
 ```
 
