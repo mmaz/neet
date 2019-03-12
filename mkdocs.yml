@@ -11,7 +11,8 @@ copyright: "© 2019 Mark Mazumder"
 markdown_extensions:
 - admonition
 - attr_list
-#- toc:
+- pymdownx.arithmatex
+- toc
 #    baselevel: 4
 
 # https://github.com/mkdocs/mkdocs/issues/1678

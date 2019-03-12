@@ -105,12 +105,17 @@ def build_model(dropout_rate=0.5):
     return model
 ```
 
-As configured above, the PilotNet model expects 200x66 crops from the car's camera.
+As configured above, the PilotNet CNN model expects 200x66 crops from the car's camera.
 
 !!! note "Exercise"
-    How many parameters does each layer represent? What is the effect of changing the input size on the total number of parameters in the network? Why? 
+    How many trainable parameters are in this model? What is the output volume of each layer?
     
-    Hint: use `model.summary()` as a way to explore the effect of changing input size.
+    What is the effect of changing the input size on the total number of parameters in the model?  
+    
+    **Hint 1:** use `model.summary()` to print out a summary of the network. 
+
+    **Hint 2:** Consider the input to the flattening operation and first dense layer: it is the output volume from the last convolutional layer. How is this affected by changing the input size? What about the next dense layer?
+    
 
 
 For more on TensorFlow's Keras API, [click here](https://tensorflow.org).
@@ -120,7 +125,12 @@ For more on TensorFlow's Keras API, [click here](https://tensorflow.org).
 
 ### Model Output and Optimization
 
-The output of this model is a single neuron, which corresponds to the servo or steering angle to command the car with. In the section on **Training** we will normalize the output angles to fit between (-1, 1) (**Question:** Why would we prefer to normalize the data?)
+The output of this model is a single neuron, which corresponds to the servo or steering angle to command the car with. In the section on [**Training**](imitation_learning.md#part-3-training-the-model) we will normalize the steering angle training data to fit between (-1, 1), and therefore we should expect predictions from the CNN to also fit between this range.
+
+!!! note "Question"
+    Notice that we also normalize the input images in the first layer between (-1,1) Why would we prefer to normalize the input and output data between these ranges?
+
+    **Hint:** Consider the shape, domain, and range of common activation functions.
 
 We will use the [Adam optimizer](https://www.tensorflow.org/api_docs/python/tf/train/AdamOptimizer) with a loss function (i.e., cost or objective function) that minimizes the mean square error betwen the ground-truth steering angles and the currently predicted steering angles:
 
@@ -130,7 +140,7 @@ model.compile(loss='mean_squared_error', optimizer=Adam(lr=1.0e-4))
 ```
 
 !!! note "Optional Exercise"
-    ith only a few changes to the above model and loss definitions, you can add a second output to estimate the velocity as well. 
+    With only a few changes to the above model and loss definitions, you can add a second output to estimate the velocity as well. This might help your team to complete the course faster! For instance, when you are collecting training data, you might want to drive quickly down straight hallways and slow down during turns. It is feasible to learn this behavior!
 
 ## Part 3: Training the Model
 
