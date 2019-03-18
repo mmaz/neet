@@ -7,7 +7,7 @@ theme:
         - python
 
 site_author: Mark Mazumder
-copyright: "© 2019 Mark Mazumder"
+copyright: "Author: Mark Mazumder, 2019"
 markdown_extensions:
 - admonition
 - attr_list

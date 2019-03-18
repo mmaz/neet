@@ -4,14 +4,14 @@
 
 This lab provides an introduction to **end-to-end imitation learning for vision-only navigation** of a racetrack. Let's break that down:
 
-* We will train a deep learning model - specifically, a *convolutional neural network* (CNN) - to predict steering angles from images.
-* Here, "imitation learning" refers to a branch of machine learning which focuses on imitating behavior from human-provided examples. In our case, we will drive a car around a track several times to provide examples for the CNN to mimic.
+* We will train a deep learning model - specifically, a *convolutional neural network* (CNN) - to regress a steering angle directly from an image taken from the "front bumper" of a car.
+* Here, "imitation learning" refers to a branch of supervised machine learning which focuses on imitating behavior from human-provided examples. In our case, we will drive a car around a track several times to provide examples for the CNN to mimic. This learning objective is also frequently termed *behavioral cloning.*
     * We will contrast this with our next lab on "reinforcement learning" where a robot agent learns to accomplish a goal via *exploration*, not via examples.
 * "Vision-only" refers to using an RGB camera as the only input to the machine learning algorithm.
     * LIDAR, depth, or vehicle IMU data are not used.
-* Here, "end-to-end learning" is shorthand for the CNN's ability to regress a steering angle (i.e., an actuation for the Ackermann controller) directly from unprocessed input data (pixels). We will not need to pre-process input features ourselves, such as extracting corners, walls, floors, or optical flow data. The CNN will learn which features are important, and perform all the steps from *image processing* to *control estimation* itself ("end-to-end", loosely speaking).
+* Here, "end-to-end learning" is shorthand for the CNN's ability to regress a steering angle (i.e., an actuation for the Ackermann steering controller) from unprocessed input data (pixels). We will not need to pre-process input features ourselves, such as extracting corners, walls, floors, or optical flow data. The CNN will learn which features are important, and perform all the steps from *image processing* to *control estimation* itself ("end-to-end", loosely speaking).
 
-We will start by driving a simulated car around a virtual racetrack and collecting camera data from the rendered game engine, as well as our game inputs. We will define a CNN that will predict similar game inputs in order for the car to complete the same track autonomously. Next, we will train the model using camera data and steering angles collected from the RACECAR platform in a real-world environment, the basement in Stata Center, in order for the RACECAR to autonomously drive through the Stata basement.
+We will start by driving a simulated car around a virtual racetrack and collecting camera data from the rendered game engine, as well as our game inputs. We will define a CNN that will regress similar game inputs in order for the car to complete the same track autonomously. Next, we will train the model using camera data and steering angles collected from the RACECAR platform in a real-world environment, the basement in Stata Center, in order for the RACECAR to autonomously drive through the Stata basement.
 
 ### In simulation:
 
@@ -32,22 +32,40 @@ This lab and the CNN architecture we will use are based on PilotNet from Nvidia:
 
 ## Part 1: Install required Python libraries and the simulation environment
 
+!!! danger "Heads up!"
+    If you are using an account on the NEET server, skip this step! These dependencies are already installed.
+
 ### `TensorFlow,` a deep-learning framework
 
 You first need to install [miniconda](https://conda.io/miniconda.html) to install TensorFlow. Download the `Python 3.7` version of miniconda and follow the installation instructions for your platform.
 
-!!! warning
-    We will be using Python 3.7 to define and train the PilotNet CNN model. Once we save a trained model (also known as saving *weights*), we can later import the saved model in a Python 2 ROS environment on the RACECAR. 
+!!! note
+    Even though you will be installing `miniconda-python-3.7`, we will be using Python 2.7 to define and train the PilotNet CNN model. `miniconda-python-3.7` will handle creating a Python 2.7 environment for you. Once we save a trained model (also known as saving *weights*), we can later import the saved model in a Python 2.7 ROS environment on the RACECAR.  (To note for completeness, is also possible to train a model with Python 3 and import it with Python 2)
 
-**TBD:**  Links to the environment files (this can be skipped on the server), and potentially switch to rapids/pytorch
+**TBD:**  potentially switch to rapids/pytorch
 
-```python
-# Use TensorFlow without a GPU
-conda env create -f environment.yml 
+Once you have installed miniconda, clone the following repository locally:
 
-# Use TensorFlow with a GPU
-conda env create -f environment-gpu.yml
+```shell
+$ git clone https://github.com/mmaz/imitation_learning_lab
+$ cd imitation_learning_lab/
 ```
+
+Next, we will install TensorFlow using the `conda` command. There are **two** options:
+
+    * If you **do not** have a GPU on your computer:
+    
+      ```shell
+      # Use TensorFlow without a GPU
+      $ conda env create -f environment.yml 
+      ```
+    
+    * Otherwise, if you **do** have a GPU:
+    
+      ```shell
+      # Use TensorFlow with a GPU
+      $ conda env create -f environment-gpu.yml
+      ```
 
 ### Udacity self-driving-car simulator
 
@@ -125,7 +143,7 @@ For more on TensorFlow's Keras API, [click here](https://tensorflow.org).
 
 ### Model Output and Optimization
 
-The output of this model is a single neuron, which corresponds to the servo or steering angle to command the car with. In the section on [**Training**](imitation_learning.md#part-3-training-the-model) we will normalize the steering angle training data to fit between (-1, 1), and therefore we should expect predictions from the CNN to also fit between this range.
+The output of this model is a single neuron, which corresponds to the servo or steering angle to command the car with. In the section on [**Training**](imitation_learning.md#part-3-training-the-model) we will normalize the steering angle training data to fit between (-1, 1), and therefore we should expect regressions from the CNN to also fit between this range.
 
 !!! note "Question"
     Notice that we also normalize the input images in the first layer between (-1,1) Why would we prefer to normalize the input and output data between these ranges?
@@ -153,6 +171,18 @@ We will use three cameras mounted on the simulated car and the real-world RACECA
 Here is a diagram from Nvidia that describes the training and *data augmentation* process for PilotNet:
 
 ![](https://devblogs.nvidia.com/parallelforall/wp-content/uploads/2016/08/training-624x291.png)
+
+### Jupyter Notebook
+
+We will train our models in Jupyter Notebook:
+
+```shell
+$ conda activate imitation_learning
+(imitation_learning) $ cd imitation_learning_lab
+(imitation_learning) $ jupyter notebook
+```
+
+Then, open [train_RACECAR_pilotnet.ipynb](https://github.com/mmaz/imitation_learning_lab/blob/master/train_RACECAR_pilotnet.ipynb) in your browser.
 
 ### In Simulation
 
@@ -202,10 +232,10 @@ In the `training/IMG/` folder you will find `.jpg` files with the following nami
 
 ### Train/Validation Split
 
-!!! danger
-    With enough training time and enough parameters, you can perfectly fit your training data!
+!!! danger "Regularization"
+    With enough training time and enough model parameters, you can perfectly fit your training data! This is called **overfitting** - we will use validation data, image augmentation, and regularization to avoid overfitting.
 
-Therefore, you will need to partition your data into training and validation data. Validation helps to ensure your model is not overfitting on the training data. 
+We will partition our data into training and validation sets. Validation helps to ensure your model is not overfitting on the training data. In the notebook, observe the use of `from sklearn.model_selection import train_test_split.`
 
 ```python
 imgs = []
@@ -355,7 +385,8 @@ checkpoint = ModelCheckpoint('markmodel2-{epoch:03d}.h5',
 
 ### [Optional] Extending to more general environments
 
-It is possible to train a network with driving data from public roads, in order to experiment with how it affects the performance of your car in Stata basement.
+It is possible to train a model with driving data from public roads, in order to experiment with how it affects the performance of your car in Stata basement.
+
 
 !!! danger
     Obviously, you should not test anything on public roads yourself, either on a RACECAR or any other car. Be safe and responsible!
@@ -363,42 +394,41 @@ It is possible to train a network with driving data from public roads, in order 
 ![](img/sc1.jpg)
 ![](img/sc2.jpg)
 ![](img/sc3.jpg)
-![](img/scpred.png)
+
+You can find useful public road data from Udacity here: <https://github.com/udacity/self-driving-car/tree/master/datasets>
+
+Another useful public road dataset is here: <https://github.com/SullyChen/driving-datasets>
+
+<!-- ![](img/scpred.png) -->
 
 
 # Part 4: RACECAR data collection and training
 
-You will need to save images to the car's SSD:
+The following script will record images from the three webcams on the RACECAR:
 
-In `zed.launch` (`$ roscd zed_wrapper`):
+<https://github.com/mmaz/imitation_learning_lab/blob/master/record_RACECAR.py>
 
-```xml
-    <arg name="resolution"           default="3" /> <!--0=RESOLUTION_HD2K, 1=RESOLUTION_HD1080, 2=RESOLUTION_HD720, 3=RESOLUTION_VGA -->
-    <arg name="frame_rate"           default="15" />
+Note that you will need to change the **Video Device IDs** to the appropriate values, depending on which order these devices were registered:
+
+```python
+# dev/video*
+LEFT   = 2
+CENTER = 3
+RIGHT  = 1
 ```
 
-In **TODO** `launch/record_bag.launch`:
-
-```xml
-args="--output-prefix $(arg saveas) $(arg extra_args) /joy /racecar_drive /vesc/sensors/core /velodyne_packets /scan /imu/data_raw /imu/data /imu/mag /zed/left/image_raw_color/compressed /zed/right/image_raw_color/compressed /zed/left/camera_info /zed/right/camera_info" />
-```
-
-Then, to record the rosbag **TODO**: 
-
-```bash
-$ roslaunch racecar_bringup record_bag.launch saveas:=/media/ssd/rosbags/
-```
-
+Note: you can use UDEV rules to "freeze" these values for your car.
 
 ## Part 5: Running inference on RACECAR
 
-The following script will load a pre-trained model and drive the car through Stata basement:
+To execute a trained model, run the following script:
 
-```bash
-$ # Optional -- mount SSD for data collection
-$ # sudo mount -t auto /dev/sda1 /media/ssd/
-$ roslaunch racecar_bringup base.launch teleop:=true
-$ roslaunch zed_wrapper zed.launch
-$ cd ~/pilotnet # or wherever you have basement-006.h5 weights stored
-$ python pilotnet_drive.py
+<https://github.com/mmaz/imitation_learning_lab/blob/master/drive_RACECAR.py>
+
+Simply [replace the model name](https://github.com/mmaz/imitation_learning_lab/blob/c041620ecadb2c1e85abfb25b8bc2aeb2e9186c9/drive_RACECAR.py#L25) with your trained model:
+
+```python
+MODEL='model_name.h5'
 ```
+
+This script also includes a mean filter. You can remove this, or change it to a median filter, etc, to experiment with inference behavior while driving.
