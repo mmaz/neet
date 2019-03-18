@@ -138,8 +138,8 @@
 <h2 id="introduction">Introduction</h2>
 <p>This lab provides an introduction to <strong>end-to-end imitation learning for vision-only navigation</strong> of a racetrack. Let's break that down:</p>
 <ul>
-<li>We will train a deep learning model - specifically, a <em>convolutional neural network</em> (CNN) - to predict steering angles from images.</li>
-<li>Here, "imitation learning" refers to a branch of machine learning which focuses on imitating behavior from human-provided examples. In our case, we will drive a car around a track several times to provide examples for the CNN to mimic.<ul>
+<li>We will train a deep learning model - specifically, a <em>convolutional neural network</em> (CNN) - to regress a steering angle directly from an image taken from the "front bumper" of a car.</li>
+<li>Here, "imitation learning" refers to a branch of supervised machine learning which focuses on imitating behavior from human-provided examples. In our case, we will drive a car around a track several times to provide examples for the CNN to mimic. This learning objective is also frequently termed <em>behavioral cloning.</em><ul>
 <li>We will contrast this with our next lab on "reinforcement learning" where a robot agent learns to accomplish a goal via <em>exploration</em>, not via examples.</li>
 </ul>
 </li>
@@ -147,9 +147,9 @@
 <li>LIDAR, depth, or vehicle IMU data are not used.</li>
 </ul>
 </li>
-<li>Here, "end-to-end learning" is shorthand for the CNN's ability to regress a steering angle (i.e., an actuation for the Ackermann controller) directly from unprocessed input data (pixels). We will not need to pre-process input features ourselves, such as extracting corners, walls, floors, or optical flow data. The CNN will learn which features are important, and perform all the steps from <em>image processing</em> to <em>control estimation</em> itself ("end-to-end", loosely speaking).</li>
+<li>Here, "end-to-end learning" is shorthand for the CNN's ability to regress a steering angle (i.e., an actuation for the Ackermann steering controller) from unprocessed input data (pixels). We will not need to pre-process input features ourselves, such as extracting corners, walls, floors, or optical flow data. The CNN will learn which features are important, and perform all the steps from <em>image processing</em> to <em>control estimation</em> itself ("end-to-end", loosely speaking).</li>
 </ul>
-<p>We will start by driving a simulated car around a virtual racetrack and collecting camera data from the rendered game engine, as well as our game inputs. We will define a CNN that will predict similar game inputs in order for the car to complete the same track autonomously. Next, we will train the model using camera data and steering angles collected from the RACECAR platform in a real-world environment, the basement in Stata Center, in order for the RACECAR to autonomously drive through the Stata basement.</p>
+<p>We will start by driving a simulated car around a virtual racetrack and collecting camera data from the rendered game engine, as well as our game inputs. We will define a CNN that will regress similar game inputs in order for the car to complete the same track autonomously. Next, we will train the model using camera data and steering angles collected from the RACECAR platform in a real-world environment, the basement in Stata Center, in order for the RACECAR to autonomously drive through the Stata basement.</p>
 <h3 id="in-simulation">In simulation:</h3>
 <table>
 <thead>
@@ -175,20 +175,37 @@
 <li><a href="https://github.com/udacity/self-driving-car-sim">Udacity's Unity3D-based Self-Driving-Car Simulator</a> and <a href="https://github.com/naokishibuya/car-behavioral-cloning">Naoki Shibuya's <code>drive.py</code> contributions</a> </li>
 </ul>
 <h2 id="part-1-install-required-python-libraries-and-the-simulation-environment">Part 1: Install required Python libraries and the simulation environment</h2>
+<div class="admonition danger">
+<p class="admonition-title">Heads up!</p>
+<p>If you are using an account on the NEET server, skip this step! These dependencies are already installed.</p>
+</div>
 <h3 id="tensorflow-a-deep-learning-framework"><code>TensorFlow,</code> a deep-learning framework</h3>
 <p>You first need to install <a href="https://conda.io/miniconda.html">miniconda</a> to install TensorFlow. Download the <code>Python 3.7</code> version of miniconda and follow the installation instructions for your platform.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>We will be using Python 3.7 to define and train the PilotNet CNN model. Once we save a trained model (also known as saving <em>weights</em>), we can later import the saved model in a Python 2 ROS environment on the RACECAR. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Even though you will be installing <code>miniconda-python-3.7</code>, we will be using Python 2.7 to define and train the PilotNet CNN model. <code>miniconda-python-3.7</code> will handle creating a Python 2.7 environment for you. Once we save a trained model (also known as saving <em>weights</em>), we can later import the saved model in a Python 2.7 ROS environment on the RACECAR.  (To note for completeness, is also possible to train a model with Python 3 and import it with Python 2)</p>
 </div>
-<p><strong>TBD:</strong>  Links to the environment files (this can be skipped on the server), and potentially switch to rapids/pytorch</p>
-<pre><code class="python"># Use TensorFlow without a GPU
-conda env create -f environment.yml 
-
-# Use TensorFlow with a GPU
-conda env create -f environment-gpu.yml
+<p><strong>TBD:</strong>  potentially switch to rapids/pytorch</p>
+<p>Once you have installed miniconda, clone the following repository locally:</p>
+<pre><code class="shell">$ git clone https://github.com/mmaz/imitation_learning_lab
+$ cd imitation_learning_lab/
 </code></pre>
 
+<p>Next, we will install TensorFlow using the <code>conda</code> command. There are <strong>two</strong> options:</p>
+<pre><code>* If you **do not** have a GPU on your computer:
+
+  ```shell
+  # Use TensorFlow without a GPU
+  $ conda env create -f environment.yml 
+  ```
+
+* Otherwise, if you **do** have a GPU:
+
+  ```shell
+  # Use TensorFlow with a GPU
+  $ conda env create -f environment-gpu.yml
+  ```
+</code></pre>
 <h3 id="udacity-self-driving-car-simulator">Udacity self-driving-car simulator</h3>
 <p>Download the <strong>Udacity Term 1</strong> simulator for your platform:</p>
 <ul>
@@ -234,11 +251,13 @@ def build_model(dropout_rate=0.5):
     return model
 </code></pre>
 
-<p>As configured above, the PilotNet model expects 200x66 crops from the car's camera.</p>
+<p>As configured above, the PilotNet CNN model expects 200x66 crops from the car's camera.</p>
 <div class="admonition note">
 <p class="admonition-title">Exercise</p>
-<p>How many parameters does each layer represent? What is the effect of changing the input size on the total number of parameters in the network? Why? </p>
-<p>Hint: use <code>model.summary()</code> as a way to explore the effect of changing input size.</p>
+<p>How many trainable parameters are in this model? What is the output volume of each layer?</p>
+<p>What is the effect of changing the input size on the total number of parameters in the model?  </p>
+<p><strong>Hint 1:</strong> use <code>model.summary()</code> to print out a summary of the network. </p>
+<p><strong>Hint 2:</strong> Consider the input to the flattening operation and first dense layer: it is the output volume from the last convolutional layer. How is this affected by changing the input size? What about the next dense layer?</p>
 </div>
 <p>For more on TensorFlow's Keras API, <a href="https://tensorflow.org">click here</a>.</p>
 <div class="admonition note">
@@ -246,7 +265,12 @@ def build_model(dropout_rate=0.5):
 <p>Note that Keras will disable <strong>Dropout regularization</strong> at inference time. <a href="https://stackoverflow.com/questions/47787011/how-to-disable-dropout-while-prediction-in-keras">See here</a> for details.</p>
 </div>
 <h3 id="model-output-and-optimization">Model Output and Optimization</h3>
-<p>The output of this model is a single neuron, which corresponds to the servo or steering angle to command the car with. In the section on <strong>Training</strong> we will normalize the output angles to fit between (-1, 1) (<strong>Question:</strong> Why would we prefer to normalize the data?)</p>
+<p>The output of this model is a single neuron, which corresponds to the servo or steering angle to command the car with. In the section on <a href="./#part-3-training-the-model"><strong>Training</strong></a> we will normalize the steering angle training data to fit between (-1, 1), and therefore we should expect regressions from the CNN to also fit between this range.</p>
+<div class="admonition note">
+<p class="admonition-title">Question</p>
+<p>Notice that we also normalize the input images in the first layer between (-1,1) Why would we prefer to normalize the input and output data between these ranges?</p>
+<p><strong>Hint:</strong> Consider the shape, domain, and range of common activation functions.</p>
+</div>
 <p>We will use the <a href="https://www.tensorflow.org/api_docs/python/tf/train/AdamOptimizer">Adam optimizer</a> with a loss function (i.e., cost or objective function) that minimizes the mean square error betwen the ground-truth steering angles and the currently predicted steering angles:</p>
 <pre><code class="python">model = build_model()
 model.compile(loss='mean_squared_error', optimizer=Adam(lr=1.0e-4))
@@ -254,7 +278,7 @@ model.compile(loss='mean_squared_error', optimizer=Adam(lr=1.0e-4))
 
 <div class="admonition note">
 <p class="admonition-title">Optional Exercise</p>
-<p>ith only a few changes to the above model and loss definitions, you can add a second output to estimate the velocity as well. </p>
+<p>With only a few changes to the above model and loss definitions, you can add a second output to estimate the velocity as well. This might help your team to complete the course faster! For instance, when you are collecting training data, you might want to drive quickly down straight hallways and slow down during turns. It is feasible to learn this behavior!</p>
 </div>
 <h2 id="part-3-training-the-model">Part 3: Training the Model</h2>
 <p>We will use three cameras mounted on the simulated car and the real-world RACECAR to collect training data. This excerpt from <a href="https://devblogs.nvidia.com/deep-learning-self-driving-cars/">Nvidia's blog post</a> explains why doing so is useful:</p>
@@ -264,6 +288,14 @@ model.compile(loss='mean_squared_error', optimizer=Adam(lr=1.0e-4))
 </blockquote>
 <p>Here is a diagram from Nvidia that describes the training and <em>data augmentation</em> process for PilotNet:</p>
 <p><img alt="" src="https://devblogs.nvidia.com/parallelforall/wp-content/uploads/2016/08/training-624x291.png" /></p>
+<h3 id="jupyter-notebook">Jupyter Notebook</h3>
+<p>We will train our models in Jupyter Notebook:</p>
+<pre><code class="shell">$ conda activate imitation_learning
+(imitation_learning) $ cd imitation_learning_lab
+(imitation_learning) $ jupyter notebook
+</code></pre>
+
+<p>Then, open <a href="https://github.com/mmaz/imitation_learning_lab/blob/master/train_RACECAR_pilotnet.ipynb">train_RACECAR_pilotnet.ipynb</a> in your browser.</p>
 <h3 id="in-simulation_1">In Simulation</h3>
 <p>First, create a new folder to store training data from the simulator, e.g. <code>training/</code>) and then start the simulator. On linux:</p>
 <pre><code class="shell">$ ./beta_simulator_linux/beta_simulator.x86_64
@@ -351,10 +383,10 @@ model.compile(loss='mean_squared_error', optimizer=Adam(lr=1.0e-4))
 </table>
 <h3 id="trainvalidation-split">Train/Validation Split</h3>
 <div class="admonition danger">
-<p class="admonition-title">Danger</p>
-<p>With enough training time and enough parameters, you can perfectly fit your training data!</p>
+<p class="admonition-title">Regularization</p>
+<p>With enough training time and enough model parameters, you can perfectly fit your training data! This is called <strong>overfitting</strong> - we will use validation data, image augmentation, and regularization to avoid overfitting.</p>
 </div>
-<p>Therefore, you will need to partition your data into training and validation data. Validation helps to ensure your model is not overfitting on the training data. </p>
+<p>We will partition our data into training and validation sets. Validation helps to ensure your model is not overfitting on the training data. In the notebook, observe the use of <code>from sklearn.model_selection import train_test_split.</code></p>
 <pre><code class="python">imgs = []
 angles_rad = [] #normalize between -pi to pi or -1 to 1
 
@@ -477,39 +509,37 @@ model.fit_generator(generator=batch_generator(X_train, y_train, batch_size=BATCH
 </code></pre>
 
 <h3 id="optional-extending-to-more-general-environments">[Optional] Extending to more general environments</h3>
-<p>It is possible to train a network with driving data from public roads, in order to experiment with how it affects the performance of your car in Stata basement.</p>
+<p>It is possible to train a model with driving data from public roads, in order to experiment with how it affects the performance of your car in Stata basement.</p>
 <div class="admonition danger">
 <p class="admonition-title">Danger</p>
 <p>Obviously, you should not test anything on public roads yourself, either on a RACECAR or any other car. Be safe and responsible!</p>
 </div>
 <p><img alt="" src="../img/sc1.jpg" />
 <img alt="" src="../img/sc2.jpg" />
-<img alt="" src="../img/sc3.jpg" />
-<img alt="" src="../img/scpred.png" /></p>
+<img alt="" src="../img/sc3.jpg" /></p>
+<p>You can find useful public road data from Udacity here: <a href="https://github.com/udacity/self-driving-car/tree/master/datasets">https://github.com/udacity/self-driving-car/tree/master/datasets</a></p>
+<p>Another useful public road dataset is here: <a href="https://github.com/SullyChen/driving-datasets">https://github.com/SullyChen/driving-datasets</a></p>
+<!-- ![](img/scpred.png) -->
+
 <h1 id="part-4-racecar-data-collection-and-training">Part 4: RACECAR data collection and training</h1>
-<p>You will need to save images to the car's SSD:</p>
-<p>In <code>zed.launch</code> (<code>$ roscd zed_wrapper</code>):</p>
-<pre><code class="xml">    &lt;arg name=&quot;resolution&quot;           default=&quot;3&quot; /&gt; &lt;!--0=RESOLUTION_HD2K, 1=RESOLUTION_HD1080, 2=RESOLUTION_HD720, 3=RESOLUTION_VGA --&gt;
-    &lt;arg name=&quot;frame_rate&quot;           default=&quot;15&quot; /&gt;
+<p>The following script will record images from the three webcams on the RACECAR:</p>
+<p><a href="https://github.com/mmaz/imitation_learning_lab/blob/master/record_RACECAR.py">https://github.com/mmaz/imitation_learning_lab/blob/master/record_RACECAR.py</a></p>
+<p>Note that you will need to change the <strong>Video Device IDs</strong> to the appropriate values, depending on which order these devices were registered:</p>
+<pre><code class="python"># dev/video*
+LEFT   = 2
+CENTER = 3
+RIGHT  = 1
 </code></pre>
 
-<p>In <strong>TODO</strong> <code>launch/record_bag.launch</code>:</p>
-<pre><code class="xml">args=&quot;--output-prefix $(arg saveas) $(arg extra_args) /joy /racecar_drive /vesc/sensors/core /velodyne_packets /scan /imu/data_raw /imu/data /imu/mag /zed/left/image_raw_color/compressed /zed/right/image_raw_color/compressed /zed/left/camera_info /zed/right/camera_info&quot; /&gt;
-</code></pre>
-
-<p>Then, to record the rosbag <strong>TODO</strong>: </p>
-<pre><code class="bash">$ roslaunch racecar_bringup record_bag.launch saveas:=/media/ssd/rosbags/
-</code></pre>
-
+<p>Note: you can use UDEV rules to "freeze" these values for your car.</p>
 <h2 id="part-5-running-inference-on-racecar">Part 5: Running inference on RACECAR</h2>
-<p>The following script will load a pre-trained model and drive the car through Stata basement:</p>
-<pre><code class="bash">$ # Optional -- mount SSD for data collection
-$ # sudo mount -t auto /dev/sda1 /media/ssd/
-$ roslaunch racecar_bringup base.launch teleop:=true
-$ roslaunch zed_wrapper zed.launch
-$ cd ~/pilotnet # or wherever you have basement-006.h5 weights stored
-$ python pilotnet_drive.py
+<p>To execute a trained model, run the following script:</p>
+<p><a href="https://github.com/mmaz/imitation_learning_lab/blob/master/drive_RACECAR.py">https://github.com/mmaz/imitation_learning_lab/blob/master/drive_RACECAR.py</a></p>
+<p>Simply <a href="https://github.com/mmaz/imitation_learning_lab/blob/c041620ecadb2c1e85abfb25b8bc2aeb2e9186c9/drive_RACECAR.py#L25">replace the model name</a> with your trained model:</p>
+<pre><code class="python">MODEL='model_name.h5'
 </code></pre>
+
+<p>This script also includes a mean filter. You can remove this, or change it to a median filter, etc, to experiment with inference behavior while driving.</p>
               
             </div>
           </div>
@@ -530,7 +560,7 @@ $ python pilotnet_drive.py
   <div role="contentinfo">
     <!-- Copyright etc -->
     
-      <p>© 2019 Mark Mazumder</p>
+      <p>Author: Mark Mazumder, 2019</p>
     
   </div>
 
