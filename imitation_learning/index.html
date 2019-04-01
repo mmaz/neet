@@ -524,6 +524,13 @@ model.fit_generator(generator=batch_generator(X_train, y_train, batch_size=BATCH
 <h1 id="part-4-racecar-data-collection-and-training">Part 4: RACECAR data collection and training</h1>
 <p>The following script will record images from the three webcams on the RACECAR:</p>
 <p><a href="https://github.com/mmaz/imitation_learning_lab/blob/master/record_RACECAR.py">https://github.com/mmaz/imitation_learning_lab/blob/master/record_RACECAR.py</a></p>
+<pre><code class="shell">$ python3 record_RACECAR.py
+</code></pre>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Use <code>python3</code> here - TensorFlow is available in the Python3 environment so we will also use OpenCV in this environment, not in <code>python2</code> where ROS is installed. For autonomous driving with ROS, we will see how to work around this inconvenience in the next section.</p>
+</div>
 <p>Note that you will need to change the <strong>Video Device IDs</strong> to the appropriate values, depending on which order the webcams were plugged in and registered by Linux:</p>
 <pre><code class="python"># dev/video*
 LEFT   = 2
@@ -537,14 +544,43 @@ RIGHT  = 0
 
 <p><img alt="" src="../img/video_id.png" style="width:100%;" /></p>
 <p>Sidenote: you can also set <code>udev</code> rules to "freeze" these values for your car, if you frequently find the IDs changing after power-cycling the RACECAR.</p>
+<p>After you have collected your training data, transfer the data using <code>scp</code> or a flashdrive to your laptop and train your model using <a href="https://github.com/mmaz/imitation_learning_lab/blob/master/train_RACECAR_pilotnet.ipynb">the provided jupyter notebook</a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Reminder</p>
+<p>You should not train a model on the Xavier - use the course server or your own laptop!</p>
+</div>
 <h2 id="part-5-running-inference-on-racecar">Part 5: Running inference on RACECAR</h2>
-<p>To execute a trained model, run the following script:</p>
-<p><a href="https://github.com/mmaz/imitation_learning_lab/blob/master/drive_RACECAR.py">https://github.com/mmaz/imitation_learning_lab/blob/master/drive_RACECAR.py</a></p>
-<p>Simply <a href="https://github.com/mmaz/imitation_learning_lab/blob/c041620ecadb2c1e85abfb25b8bc2aeb2e9186c9/drive_RACECAR.py#L25">replace the model name</a> with your trained model:</p>
+<p>To execute a trained model, you will need to run the following scripts:</p>
+<p><a href="https://github.com/mmaz/imitation_learning_lab/blob/master/infer_RACECAR.py">https://github.com/mmaz/imitation_learning_lab/blob/master/infer_RACECAR.py</a>
+<a href="https://github.com/mmaz/imitation_learning_lab/blob/master/drive_RACECAR.py">https://github.com/mmaz/imitation_learning_lab/blob/master/drive_RACECAR.py</a></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We use <code>zmq</code> to send steering angle messages from our Python3 script running inference with TensorFlow, over to a Python2-ROS script that commands the car to drive.</p>
+</div>
+<p>You will first need to <a href="https://github.com/mmaz/imitation_learning_lab/blob/ee982299cdfe81ddf59541f696fe2f1b8f9ba104/infer_RACECAR.py#L23">replace the model name here</a> with your trained model:</p>
 <pre><code class="python">MODEL='model_name.h5'
 </code></pre>
 
-<p>This script also includes a mean filter. You can remove this, or change it to a median filter, etc, to experiment with inference behavior while driving.</p>
+<p>Next, if it has changed (due to a reboot or unplugging the cameras), remember <a href="https://github.com/mmaz/imitation_learning_lab/blob/ee982299cdfe81ddf59541f696fe2f1b8f9ba104/infer_RACECAR.py#L19">to <strong>modify the video ID</strong> to the center camera here</a>, or verify the current ID is correct using <a href="https://github.com/mmaz/imitation_learning_lab/blob/master/video_id_RACECAR.py"><code>video_id_RACECAR.py</code></a>:</p>
+<pre><code class="python">CENTER_CAMERA_VIDEO_ID = 1 # /dev/video*
+</code></pre>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We only need the center camera during inference.</p>
+</div>
+<p>Then, in one terminal, run:</p>
+<pre><code class="shell">$ python3 infer_RACECAR.py
+</code></pre>
+
+<p>Ensure you are using <strong>python3</strong> above. In another terminal, use <strong>python2</strong> and run:</p>
+<pre><code class="shell">$ python2 drive_RACECAR.py
+</code></pre>
+
+<div class="admonition note">
+<p class="admonition-title">Optional exercise</p>
+<p>This script also includes a mean filter. You can remove this, extend or shorten the length of the mean filter, change it to a median filter, etc, to experiment with inference behavior while driving.</p>
+</div>
               
             </div>
           </div>
