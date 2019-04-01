@@ -408,16 +408,25 @@ The following script will record images from the three webcams on the RACECAR:
 
 <https://github.com/mmaz/imitation_learning_lab/blob/master/record_RACECAR.py>
 
-Note that you will need to change the **Video Device IDs** to the appropriate values, depending on which order these devices were registered:
+Note that you will need to change the **Video Device IDs** to the appropriate values, depending on which order the webcams were plugged in and registered by Linux:
 
 ```python
 # dev/video*
 LEFT   = 2
-CENTER = 3
-RIGHT  = 1
+CENTER = 1
+RIGHT  = 0
 ```
 
-Note: you can use UDEV rules to "freeze" these values for your car.
+[The following script](https://github.com/mmaz/imitation_learning_lab/blob/master/video_id_RACECAR.py) will display the currently assigned video device IDs on top of the camera feeds, to help verify the IDs are in the correct order:
+
+
+```
+$ python3 video_id_RACECAR.py
+```
+
+![](img/video_id.png){: style="width:100%;" }
+
+Sidenote: you can also set `udev` rules to "freeze" these values for your car, if you frequently find the IDs changing after power-cycling the RACECAR.
 
 ## Part 5: Running inference on RACECAR
 
