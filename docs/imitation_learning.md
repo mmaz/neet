@@ -404,16 +404,16 @@ Another useful public road dataset is here: <https://github.com/SullyChen/drivin
 
 # Part 4: RACECAR data collection and training
 
-The following script will record images from the three webcams on the RACECAR:
+In this section you will manually collect steering angle data by driving the car around. The following script will record images from the three webcams on the RACECAR along with the joystick-commanded steering angle (through `teleop`):
 
 <https://github.com/mmaz/imitation_learning_lab/blob/master/record_RACECAR.py>
 
 ```shell
-$ python3 record_RACECAR.py
+$ python2 record_RACECAR.py
 ```
 
 !!! note
-    Use `python3` here - TensorFlow is available in the Python3 environment so we will also use OpenCV in this environment, not in `python2` where ROS is installed. For autonomous driving with ROS, we will see how to work around this inconvenience in the next section.
+    Make sure to use **`python2`** here for recording the images and steering angle data - note that we will **not** use `python2` in the next section to access the cameras. TensorFlow is only available in the car's `python3` environment, and ROS is only available in our `python2` environment. For recording, we do not need access to TensorFlow, only OpenCV. For autonomous driving with both TensorFlow and ROS, we will see how to work around this inconvenience in the next section via `zmq`.
 
 Note that you will need to change the **Video Device IDs** to the appropriate values, depending on which order the webcams were plugged in and registered by Linux:
 
@@ -430,6 +430,8 @@ RIGHT  = 0
 ```
 $ python3 video_id_RACECAR.py
 ```
+
+`python2` should also work above.
 
 ![](img/video_id.png){: style="width:100%;" }
 
