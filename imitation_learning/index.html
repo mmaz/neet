@@ -524,14 +524,19 @@ model.fit_generator(generator=batch_generator(X_train, y_train, batch_size=BATCH
 <h1 id="part-4-racecar-data-collection-and-training">Part 4: RACECAR data collection and training</h1>
 <p>The following script will record images from the three webcams on the RACECAR:</p>
 <p><a href="https://github.com/mmaz/imitation_learning_lab/blob/master/record_RACECAR.py">https://github.com/mmaz/imitation_learning_lab/blob/master/record_RACECAR.py</a></p>
-<p>Note that you will need to change the <strong>Video Device IDs</strong> to the appropriate values, depending on which order these devices were registered:</p>
+<p>Note that you will need to change the <strong>Video Device IDs</strong> to the appropriate values, depending on which order the webcams were plugged in and registered by Linux:</p>
 <pre><code class="python"># dev/video*
 LEFT   = 2
-CENTER = 3
-RIGHT  = 1
+CENTER = 1
+RIGHT  = 0
 </code></pre>
 
-<p>Note: you can use UDEV rules to "freeze" these values for your car.</p>
+<p><a href="https://github.com/mmaz/imitation_learning_lab/blob/master/video_id_RACECAR.py">The following script</a> will display the currently assigned video device IDs on top of the camera feeds, to help verify the IDs are in the correct order:</p>
+<pre><code>$ python3 video_id_RACECAR.py
+</code></pre>
+
+<p><img alt="" src="../img/video_id.png" style="width:100%;" /></p>
+<p>Sidenote: you can also set <code>udev</code> rules to "freeze" these values for your car, if you frequently find the IDs changing after power-cycling the RACECAR.</p>
 <h2 id="part-5-running-inference-on-racecar">Part 5: Running inference on RACECAR</h2>
 <p>To execute a trained model, run the following script:</p>
 <p><a href="https://github.com/mmaz/imitation_learning_lab/blob/master/drive_RACECAR.py">https://github.com/mmaz/imitation_learning_lab/blob/master/drive_RACECAR.py</a></p>
