@@ -522,14 +522,14 @@ model.fit_generator(generator=batch_generator(X_train, y_train, batch_size=BATCH
 <!-- ![](img/scpred.png) -->
 
 <h1 id="part-4-racecar-data-collection-and-training">Part 4: RACECAR data collection and training</h1>
-<p>The following script will record images from the three webcams on the RACECAR:</p>
+<p>In this section you will manually collect steering angle data by driving the car around. The following script will record images from the three webcams on the RACECAR along with the joystick-commanded steering angle (through <code>teleop</code>):</p>
 <p><a href="https://github.com/mmaz/imitation_learning_lab/blob/master/record_RACECAR.py">https://github.com/mmaz/imitation_learning_lab/blob/master/record_RACECAR.py</a></p>
-<pre><code class="shell">$ python3 record_RACECAR.py
+<pre><code class="shell">$ python2 record_RACECAR.py
 </code></pre>
 
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Use <code>python3</code> here - TensorFlow is available in the Python3 environment so we will also use OpenCV in this environment, not in <code>python2</code> where ROS is installed. For autonomous driving with ROS, we will see how to work around this inconvenience in the next section.</p>
+<p>Make sure to use <strong><code>python2</code></strong> here for recording the images and steering angle data - note that we will <strong>not</strong> use <code>python2</code> in the next section to access the cameras. TensorFlow is only available in the car's <code>python3</code> environment, and ROS is only available in our <code>python2</code> environment. For recording, we do not need access to TensorFlow, only OpenCV. For autonomous driving with both TensorFlow and ROS, we will see how to work around this inconvenience in the next section via <code>zmq</code>.</p>
 </div>
 <p>Note that you will need to change the <strong>Video Device IDs</strong> to the appropriate values, depending on which order the webcams were plugged in and registered by Linux:</p>
 <pre><code class="python"># dev/video*
@@ -542,6 +542,7 @@ RIGHT  = 0
 <pre><code>$ python3 video_id_RACECAR.py
 </code></pre>
 
+<p><code>python2</code> should also work above.</p>
 <p><img alt="" src="../img/video_id.png" style="width:100%;" /></p>
 <p>Sidenote: you can also set <code>udev</code> rules to "freeze" these values for your car, if you frequently find the IDs changing after power-cycling the RACECAR.</p>
 <p>After you have collected your training data, transfer the data using <code>scp</code> or a flashdrive to your laptop and train your model using <a href="https://github.com/mmaz/imitation_learning_lab/blob/master/train_RACECAR_pilotnet.ipynb">the provided jupyter notebook</a>.</p>
