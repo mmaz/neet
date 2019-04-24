@@ -501,7 +501,7 @@ model.fit_generator(generator=batch_generator(X_train, y_train, batch_size=BATCH
 <p>It is important to ensure the train/test split of the data you have collected have similar driving condition represented. For instance, here is the histogram of servo angles in the training and testing data used above:</p>
 <p><img alt="" src="../img/basement_histogram_servo.png" /></p>
 <h3 id="checkpointing">Checkpointing</h3>
-<pre><code class="python">checkpoint = ModelCheckpoint('markmodel2-{epoch:03d}.h5',
+<pre><code class="python">checkpoint = ModelCheckpoint('model-{epoch:03d}.h5',
                              monitor='val_loss',
                              verbose=0,
                              save_best_only=False,
@@ -522,7 +522,16 @@ model.fit_generator(generator=batch_generator(X_train, y_train, batch_size=BATCH
 <!-- ![](img/scpred.png) -->
 
 <h1 id="part-4-racecar-data-collection-and-training">Part 4: RACECAR data collection and training</h1>
-<p>In this section you will manually collect steering angle data by driving the car around. The following script will record images from the three webcams on the RACECAR along with the joystick-commanded steering angle (through <code>teleop</code>):</p>
+<p>In this section you will manually collect steering angle data by driving the car around. </p>
+<p>A good first task is to train the RACECAR to drive around some tables in a circle, before tackling Stata basement. You can also define some more intermediate-difficulty courses (figure-eights, snake patterns, etc) to gain intuition on what types of training and validation methods are most effective.</p>
+<p>Here is an example of training data collected around some tables in a classroom:</p>
+<p><img alt="" src="../img/carpath.png" style="width:50%;" /></p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/dvyEbNUAKSE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<p>And here is a third-person view of a car autonomously driving around the same path using PilotNet:</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/BnLihmE9o0k" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<p>The following script will record images from the three webcams on the RACECAR along with the joystick-commanded steering angle (through <code>teleop</code>):</p>
 <p><a href="https://github.com/mmaz/imitation_learning_lab/blob/master/record_RACECAR.py">https://github.com/mmaz/imitation_learning_lab/blob/master/record_RACECAR.py</a></p>
 <pre><code class="shell">$ python2 record_RACECAR.py
 </code></pre>
@@ -531,11 +540,13 @@ model.fit_generator(generator=batch_generator(X_train, y_train, batch_size=BATCH
 <p class="admonition-title">Note</p>
 <p>Make sure to use <strong><code>python2</code></strong> here for recording the images and steering angle data - note that we will <strong>not</strong> use <code>python2</code> in the next section to access the cameras. TensorFlow is only available in the car's <code>python3</code> environment, and ROS is only available in our <code>python2</code> environment. For recording, we do not need access to TensorFlow, only OpenCV. For autonomous driving with both TensorFlow and ROS, we will see how to work around this inconvenience in the next section via <code>zmq</code>.</p>
 </div>
-<p>Note that you will need to change the <strong>Video Device IDs</strong> to the appropriate values, depending on which order the webcams were plugged in and registered by Linux:</p>
-<pre><code class="python"># dev/video*
-LEFT   = 2
-CENTER = 1
-RIGHT  = 0
+<p>Note that you will need to change the <strong>Video Device IDs</strong> to the appropriate values, depending on which order the webcams were plugged in and registered by Linux.</p>
+<p>Set the appropriate values for your car in <a href="https://github.com/mmaz/imitation_learning_lab/blob/6dd9a61f2c687888de80afe94c2df139490828cd/cameras_RACECAR.py#L3-L5"><code>camera_RACECAR.py</code></a></p>
+<pre><code class="python">class Video:
+    # dev/video*
+    LEFT = 1
+    CENTER = 2
+    RIGHT = 0
 </code></pre>
 
 <p><a href="https://github.com/mmaz/imitation_learning_lab/blob/master/video_id_RACECAR.py">The following script</a> will display the currently assigned video device IDs on top of the camera feeds, to help verify the IDs are in the correct order:</p>
@@ -548,7 +559,7 @@ RIGHT  = 0
 <p>After you have collected your training data, transfer the data using <code>scp</code> or a flashdrive to your laptop and train your model using <a href="https://github.com/mmaz/imitation_learning_lab/blob/master/train_RACECAR_pilotnet.ipynb">the provided jupyter notebook</a>.</p>
 <div class="admonition warning">
 <p class="admonition-title">Reminder</p>
-<p>You should not train a model on the Xavier - use the course server or your own laptop!</p>
+<p>You should not train a model on the RACECAR - use the course server or your own laptop!</p>
 </div>
 <h2 id="part-5-running-inference-on-racecar">Part 5: Running inference on RACECAR</h2>
 <p>To execute a trained model, you will need to run the following scripts:</p>
@@ -582,6 +593,8 @@ RIGHT  = 0
 <p class="admonition-title">Optional exercise</p>
 <p>This script also includes a mean filter. You can remove this, extend or shorten the length of the mean filter, change it to a median filter, etc, to experiment with inference behavior while driving.</p>
 </div>
+<p><a href="https://github.com/mmaz/imitation_learning_lab/blob/master/visualize_drive.ipynb">visualize_drive.ipynb</a> can be used to overlay steering angle predictions on top of saved runs (see <code>infer_RACECAR.py</code> for a flag that saves images during inference):</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/o0I6_YiL0X4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
               
             </div>
           </div>
