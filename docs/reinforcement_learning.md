@@ -1,65 +1,82 @@
-# Reinforcement Learning
+# Reinforcement Learning Lab
 
-To be released soon!
-
-<!--
 ## Introduction
 
-**Objective:** This lab is an introduction to *deep reinforcement learning* as a technique to avoid obstacles and navigate complex environments using only a camera for sensing.
+**Objective:** This lab exercise introduces *deep reinforcement learning* (Deep RL) for autonomous driving in simulation, using only a camera for sensing.
 
-Reinforcement learning is distinct from the imitation learning aproach: here, the robot learns to explore the environment on its own, with almost no information about the world or itself. Through exploration and *reinforcement,* rather than human-provided examples of behavior to imitate, the robot has the potential to learn novel and optimal techniques exceeding the abilities of humans.
+Reinforcement learning is distinct from imitation learning: here, the robot learns to explore the environment on its own, with practically no prior information about the world or itself. Through exploration and reinforcement of behaviors which net reward, rather than human-provided examples of behavior to imitate, a robot has the potential to learn novel, optimal techniques which exceed the abilities of humans. Atari games, Go, and StarCraft are settings in which Deep RL algorithms have approached or surpassed human experts in skill.
 
-This lab will introduce you to using a simulation environment for your robot use as a sandbox for exploration. In particular, we will use **TODO** FlightGoggles from MIT:
+This lab relies on providing the robot with a simulation environment to use as a sandbox for exploration. In particular, we will use a Unity-based simulation environment originally developed by [Tawn Kramer](https://github.com/tawnkramer/) for the [DonkeyCar RC platform](https://www.donkeycar.com/).
 
-## TODO: FlightGoggles
+This lab exercise relies on a Deep RL demonstration by [Antonin Raffin](https://github.com/araffin), which uses [*Proximal Policy Optimization (PPO)*](https://spinningup.openai.com/en/latest/algorithms/ppo.html) and [*Soft Actor-Critic (SAC)*](https://spinningup.openai.com/en/latest/algorithms/sac.html) to quickly train the simulated DonkeyCar to drive on a randomly generated track. This demonstration is itself a fork of an earlier repository by [Roma Sokolkov](https://github.com/r7vme), which leveraged another Deep RL algorithm [*Deep Deterministic Policy Gradient*](https://spinningup.openai.com/en/latest/algorithms/ddpg.html) in the simulator.
 
-[FlightGoggles](https://github.com/mit-fast/FlightGoggles)
+For the lab exercise we have forked Antonin Raffin's repository in case there are any lab-specific changes to distribute, but the lab fork is otherwise simply tracking the upstream repo by the original authors (Raffin, Sokolov, Kramer, and [other contributors/sources](https://github.com/mmaz/learning-to-drive-in-5-minutes#credits)):
 
+```shell
+$ git clone https://github.com/mmaz/learning-to-drive-in-5-minutes
+```
 
-## An overview of Reinforcement Learning
+Lastly, it is instructive to review [Antonin Raffin's blogpost](https://medium.com/@araffin/learning-to-drive-smoothly-in-minutes-450a7cdb35f4) on the testing he conducted, for ideas and background, as you work on the lab.
 
-From [Spinning Up in Deep RL](https://spinningup.openai.com/en/latest/spinningup/rl_intro.html)
+## A review of Reinforcement Learning
 
-> *The main characters of RL are the agent and the environment. The environment is the world that the agent lives in and interacts with. At every step of interaction, the agent sees a (possibly partial) observation of the state of the world, and then decides on an action to take. The environment changes when the agent acts on it, but may also change on its own.*
->
-> *The agent also perceives a reward signal from the environment, a number that tells it how good or bad the current world state is. The goal of the agent is to maximize its cumulative reward, called return. Reinforcement learning methods are ways that the agent can learn behaviors to achieve its goal.*
+If needed, OpenAI's [Spinning Up in Deep RL](https://spinningup.openai.com/en/latest/spinningup/rl_intro.html) is an excellent way to review in greater depth the concepts discussed during lecture. In particular, the lab is based on topics covered in these sections:
 
-![agent-environment loop](https://spinningup.openai.com/en/latest/_images/rl_diagram_transparent_bg.png)
-
-
-
-
-$$P(\tau|\pi) = \rho_0 (s_0) \prod_{t=0}^{T-1} P(s_{t+1} | s_t, a_t) \pi(a_t | s_t)$$
-
--->
-
-
-<!-- The expected return (for whichever measure), denoted by $J(\pi)$ , is then:
-
-$$J(\pi) = \int_{\tau} P(\tau|\pi) R(\tau) = \underE{\tau\sim \pi}{R(\tau)}$$
--->
-
-<!--
-
-The central optimization problem in RL can then be expressed by
-
-
-
-$$\pi^* = \arg \max_{\pi} J(\pi)$$
+* [Basic concepts in RL](https://spinningup.openai.com/en/latest/spinningup/rl_intro.html)
+* [The derivation of policy gradients](https://spinningup.openai.com/en/latest/spinningup/rl_intro3.html)
+* [The "vanilla PG" algorithm](https://spinningup.openai.com/en/latest/algorithms/vpg.html)
+* [*Proximal Policy Optimization (PPO)*](https://spinningup.openai.com/en/latest/algorithms/ppo.html) 
+* [*Soft Actor-Critic (SAC)*](https://spinningup.openai.com/en/latest/algorithms/sac.html)
 
 ## Gym Interface
 
-This is a defacto-standard interface for reinforcement learning in simulation, popularized by OpenAI's Gym environment:
-
-
+"Gym" interfaces refer to a de facto-standard for reinforcement learning in simulation, popularized by [OpenAI's Gym environment](https://gym.openai.com/). Simulation environments frequently support variants of the following two calls:
 
 * `reset()`
-* `step()` and frame-skipping
-* `is_game_over()`
+* `step()`
+
+Calls to `step()` usually take in actions and return the next state, observed reward (if any), and auxillary information such as whether the episode is over (allowing the RL algorithm time to make decisions and optionally `reset()` the environment for the next episode). For a more in-depth explanation on the concepts in a Gym API, read <http://gym.openai.com/docs/>.
 
 
-## The DQN Algorithm
+## Part 1: installing the DonkeyCar simulator
 
-![dqn](img/dqn.png)
+The following link is a Linux build of the Unity Donkey simulation environment from the original author: 
 
--->
+[Download on Google Drive](https://drive.google.com/open?id=1h2VfpGHlZetL5RAPZ79bhDRkvlfuB4Wb)
+
+!!! note
+    The simulation can also be built from source for other platforms, from [the `donkey` tree of the `sdsandbox` repo](https://github.com/tawnkramer/sdsandbox/tree/donkey) using the [Unity](https://unity.com/) development platform.
+
+### Starting the simulator
+
+After unzipping the folder and changing into the directory, launch the simulator with:
+
+```
+$ ./build_sdsandbox.x86_64
+```
+
+I suggest the following settings of `640x480`, `windowed`, and `Fantastic` rendering quality (but this wll depend on your graphics support):
+
+![](img/dcsim.png){: style="width:80%;" }
+
+### Simulator implementations of OpenAI Gym functions:
+
+The following links to the simulator's Gym API implementation are provided as reference for your experimentation (changing the implementation is not necessary however). Note that editing these implementations will not require rebuilidng the simulator, making experimentation easier to conduct.
+
+* `step()` is implemented through several callbacks:
+    * [`take_action()`](https://github.com/mmaz/learning-to-drive-in-5-minutes/blob/89a3b2ca040014cb2193ad3fe88636de146f49ce/donkey_gym/envs/donkey_sim.py#L185-L197)
+    * [`calc_reward()`](https://github.com/mmaz/learning-to-drive-in-5-minutes/blob/89a3b2ca040014cb2193ad3fe88636de146f49ce/donkey_gym/envs/donkey_sim.py#L219-L234) - note that this depends implicitly on the cross-track error reported by the simulator
+    * [`on_telemetry()`](https://github.com/mmaz/learning-to-drive-in-5-minutes/blob/89a3b2ca040014cb2193ad3fe88636de146f49ce/donkey_gym/envs/donkey_sim.py#L238-L280) This recieves data from the simulator, including
+        * front-bumper images from the simulated DonkeyCar
+        * current steering angle and velocity
+        * cross-track error ("cte")
+* [`reset()`](https://github.com/mmaz/learning-to-drive-in-5-minutes/blob/89a3b2ca040014cb2193ad3fe88636de146f49ce/donkey_gym/envs/donkey_sim.py#L159-L177) sets all counters to zero
+* [`is_game_over()`](https://github.com/mmaz/learning-to-drive-in-5-minutes/blob/89a3b2ca040014cb2193ad3fe88636de146f49ce/donkey_gym/envs/donkey_sim.py#L213-L217) is simply a combination of checking for collisions (not present in level 0) or crossing a threshhold of tolerated cross-track error
+
+## Part 2: Installing Deep RL dependencies 
+
+## Part 3: Training with the existing VAE
+
+## Part 4: Experimenting with Deep RL
+
+## Part 5: Retraining the VAE
