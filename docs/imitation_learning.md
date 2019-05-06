@@ -42,7 +42,6 @@ You first need to install [miniconda](https://conda.io/miniconda.html) to instal
 !!! note
     Even though you will be installing `miniconda-python-3.7`, we will be using Python 2.7 to define and train the PilotNet CNN model. `miniconda-python-3.7` will handle creating a Python 2.7 environment for you. Once we save a trained model (also known as saving *weights*), we can later import the saved model in a Python 2.7 ROS environment on the RACECAR.  (To note for completeness, is also possible to train a model with Python 3 and import it with Python 2)
 
-**TBD:**  potentially switch to rapids/pytorch
 
 Once you have installed miniconda, clone the following repository locally:
 
@@ -53,19 +52,20 @@ $ cd imitation_learning_lab/
 
 Next, we will install TensorFlow using the `conda` command. There are **two** options:
 
-    * If you **do not** have a GPU on your computer:
+* If you **do not** have a GPU on your computer:
     
-      ```shell
-      # Use TensorFlow without a GPU
-      $ conda env create -f environment.yml 
-      ```
+```shell
+# Use TensorFlow without a GPU
+$ conda env create -f environment.yml 
+```
     
-    * Otherwise, if you **do** have a GPU:
+* Otherwise, if you **do** have a GPU:
     
-      ```shell
-      # Use TensorFlow with a GPU
-      $ conda env create -f environment-gpu.yml
-      ```
+```shell
+# Use TensorFlow with a GPU
+$ conda env create -f environment-gpu.yml
+```
+
 
 ### Udacity self-driving-car simulator
 

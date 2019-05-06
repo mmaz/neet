@@ -25,8 +25,8 @@ If needed, OpenAI's [Spinning Up in Deep RL](https://spinningup.openai.com/en/la
 * [Basic concepts in RL](https://spinningup.openai.com/en/latest/spinningup/rl_intro.html)
 * [The derivation of policy gradients](https://spinningup.openai.com/en/latest/spinningup/rl_intro3.html)
 * [The "vanilla PG" algorithm](https://spinningup.openai.com/en/latest/algorithms/vpg.html)
-* [*Proximal Policy Optimization (PPO)*](https://spinningup.openai.com/en/latest/algorithms/ppo.html) 
-* [*Soft Actor-Critic (SAC)*](https://spinningup.openai.com/en/latest/algorithms/sac.html)
+* [Proximal Policy Optimization (PPO)](https://spinningup.openai.com/en/latest/algorithms/ppo.html) 
+* [Soft Actor-Critic (SAC)](https://spinningup.openai.com/en/latest/algorithms/sac.html)
 
 ## Gym Interface
 
@@ -73,10 +73,48 @@ The following links to the simulator's Gym API implementation are provided as re
 * [`reset()`](https://github.com/mmaz/learning-to-drive-in-5-minutes/blob/89a3b2ca040014cb2193ad3fe88636de146f49ce/donkey_gym/envs/donkey_sim.py#L159-L177) sets all counters to zero
 * [`is_game_over()`](https://github.com/mmaz/learning-to-drive-in-5-minutes/blob/89a3b2ca040014cb2193ad3fe88636de146f49ce/donkey_gym/envs/donkey_sim.py#L213-L217) is simply a combination of checking for collisions (not present in level 0) or crossing a threshhold of tolerated cross-track error
 
-## Part 2: Installing Deep RL dependencies 
+## Part 2: Installing Deep RL python dependencies 
+
+!!! danger "Heads up!"
+    If you are using an account on the NEET server, skip this step! These dependencies are already installed.
+
+
+* If you **do not** have a GPU on your computer:
+    
+```shell
+# Use TensorFlow without a GPU
+$ conda env create -f environment.yml 
+```
+    
+* Otherwise, if you **do** have a GPU:
+    
+```shell
+# Use TensorFlow with a GPU
+$ conda env create -f environment-gpu.yml
+```
 
 ## Part 3: Training with the existing VAE
 
+First, download [the pre-trained VAE from the author's Google Drive folder](https://drive.google.com/open?id=1n7FosFA0hALhuESf1j1yg-hERCnfVc4b) for Level0 in the same directory you cloned the repository into.
+
+Next, launch the Unity environment (if it is not already running from **Part 1**)
+
+To launch a newly initialized training run for the PPO algorithm across 5000 iterations, run the following command:
+
+```shell
+$ python train.py --algo ppo -vae vae-level-0-dim-32.pkl -n 5000
+```
+
+Alternatively, to launch a training run for *Soft Actor-Critic* (SAC):
+
+```shell
+$ python train.py --algo sac -vae vae-level-0-dim-32.pkl -n 5000
+```
+
 ## Part 4: Experimenting with Deep RL
 
+**TBD**
+
 ## Part 5: Retraining the VAE
+
+**TBD**
