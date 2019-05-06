@@ -39,8 +39,19 @@ If needed, OpenAI's [Spinning Up in Deep RL](https://spinningup.openai.com/en/la
 
 Calls to `step()` usually take in actions and return the next state, observed reward (if any), and auxillary information such as whether the episode is over (allowing the RL algorithm time to make decisions and optionally `reset()` the environment for the next episode). For a more in-depth explanation on the concepts in a Gym API, read <http://gym.openai.com/docs/>.
 
+## State-space Dimensionality Reduction
 
-## Part 1: installing the DonkeyCar simulator
+A **variational autoencoder** or VAE is used to reduce the size of the state space that the policy must consider at training and inference time. The state space is represented as a small vector of floating point numbers (e.g., 20-30) taken from the VAE's bottleneck encoding (i.e., the "latent space" encoding), instead of the full image.
+
+[This lecture](https://www.youtube.com/watch?v=uaaqyVS9-rM) from Prof. Ali Ghodsi at the University of Waterloo is an excellent, brief, and self-contained introduction to the theory and implementation of VAEs. For additional reading, please consult one or more of these references (or inquire during office hours/over Slack):
+
+* Ali Ghodsi's lecture: <https://www.youtube.com/watch?v=uaaqyVS9-rM>
+* <https://jaan.io/what-is-variational-autoencoder-vae-tutorial/>
+* <https://www.tensorflow.org/alpha/tutorials/generative/cvae>
+* <https://blog.keras.io/building-autoencoders-in-keras.html>
+* Fast-forward Labs blog [Part 1](https://blog.fastforwardlabs.com/2016/08/12/introducing-variational-autoencoders-in-prose-and.html) and [Part 2](https://blog.fastforwardlabs.com/2016/08/22/under-the-hood-of-the-variational-autoencoder-in.html)
+
+## Part 1: Downloading the DonkeyCar simulation environment
 
 The following link is a Linux build of the Unity Donkey simulation environment from the original author: 
 
@@ -115,7 +126,7 @@ $ python train.py --algo sac -vae vae-level-0-dim-32.pkl -n 5000
 
 ## Part 4: Experimenting with Deep RL
 
-Once you can collect training data in the simulation, you can experiment with the existing algorithms, or try a different Deep RL algorithm altogether, such as [TRPO](http://spinningup.openai.com/en/latest/algorithms/trpo.html), [TD3](http://spinningup.openai.com/en/latest/algorithms/td3.html), etc.
+Once you have tried training a policy in the simulation environment, you can experiment with changing the existing algorithms, or try a different Deep RL algorithm altogether, such as [TRPO](http://spinningup.openai.com/en/latest/algorithms/trpo.html), [TD3](http://spinningup.openai.com/en/latest/algorithms/td3.html), etc.
 
 The goal of this section of the lab is to gain some intuition and experience with training the vehicle's policy using deep reinforcement learning, through modifying the existing code, hyperparameters, and algorithms, or by incorporating new algorithms. Your experimentation can target one or more threads of investigation (this is a non-exhaustive list):
 
@@ -124,7 +135,8 @@ The goal of this section of the lab is to gain some intuition and experience wit
  
 Here are a few examples of things to try:
 
-* Train a policy for random roads
+* 
+* Train a policy that can drive on random roads (the simulator is currently set up to use the same road for every episode)
 
 **TBD**
 
