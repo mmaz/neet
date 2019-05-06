@@ -569,8 +569,12 @@ model.fit_generator(generator=batch_generator(X_train, y_train, batch_size=BATCH
 <p>We use <code>zmq</code> to send steering angle messages from our Python3 script running inference with TensorFlow, over to a Python2-ROS script that commands the car to drive.</p>
 </div>
 <p>You will first need to copy your saved model weights to the RACECAR (e.g., using SCP). You will specify the model location using <a href="https://github.com/mmaz/imitation_learning_lab/blob/6dd9a61f2c687888de80afe94c2df139490828cd/infer_RACECAR.py#L27">this command-line argument</a>.</p>
-<p>Next, if it has changed (due to a reboot or unplugging the cameras), remember <a href="https://github.com/mmaz/imitation_learning_lab/blob/ee982299cdfe81ddf59541f696fe2f1b8f9ba104/infer_RACECAR.py#L19">to <strong>modify the video ID</strong> to the center camera here</a>, or verify the current ID is correct using <a href="https://github.com/mmaz/imitation_learning_lab/blob/master/video_id_RACECAR.py"><code>video_id_RACECAR.py</code></a>:</p>
-<pre><code class="python">CENTER_CAMERA_VIDEO_ID = 1 # /dev/video*
+<p>Next, if it has changed (due to a reboot or unplugging the cameras), remember <a href="https://github.com/mmaz/imitation_learning_lab/blob/6dd9a61f2c687888de80afe94c2df139490828cd/cameras_RACECAR.py#L3-L5">to <strong>modify the video ID</strong> to the center camera here</a>, or verify the current ID is correct using <a href="https://github.com/mmaz/imitation_learning_lab/blob/master/video_id_RACECAR.py"><code>video_id_RACECAR.py</code></a>:</p>
+<pre><code class="python">class Video:
+    # dev/video*
+    LEFT = 1
+    CENTER = 2
+    RIGHT = 0
 </code></pre>
 
 <div class="admonition note">
