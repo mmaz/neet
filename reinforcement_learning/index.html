@@ -80,11 +80,13 @@
         
             <li><a class="toctree-l3" href="#gym-interface">Gym Interface</a></li>
         
-            <li><a class="toctree-l3" href="#part-1-installing-the-donkeycar-simulator">Part 1: installing the DonkeyCar simulator</a></li>
+            <li><a class="toctree-l3" href="#state-space-dimensionality-reduction">State-space Dimensionality Reduction</a></li>
+        
+            <li><a class="toctree-l3" href="#part-1-downloading-the-donkeycar-simulation-environment">Part 1: Downloading the DonkeyCar simulation environment</a></li>
         
             <li><a class="toctree-l3" href="#part-2-installing-deep-rl-python-dependencies">Part 2: Installing Deep RL python dependencies</a></li>
         
-            <li><a class="toctree-l3" href="#part-3-training-with-the-existing-vae">Part 3: Training with the existing VAE</a></li>
+            <li><a class="toctree-l3" href="#part-3-training-a-policy-with-a-pre-trained-vae">Part 3: Training a policy with a pre-trained VAE</a></li>
         
             <li><a class="toctree-l3" href="#part-4-experimenting-with-deep-rl">Part 4: Experimenting with Deep RL</a></li>
         
@@ -161,7 +163,17 @@
 <li><code>step()</code></li>
 </ul>
 <p>Calls to <code>step()</code> usually take in actions and return the next state, observed reward (if any), and auxillary information such as whether the episode is over (allowing the RL algorithm time to make decisions and optionally <code>reset()</code> the environment for the next episode). For a more in-depth explanation on the concepts in a Gym API, read <a href="http://gym.openai.com/docs/">http://gym.openai.com/docs/</a>.</p>
-<h2 id="part-1-installing-the-donkeycar-simulator">Part 1: installing the DonkeyCar simulator</h2>
+<h2 id="state-space-dimensionality-reduction">State-space Dimensionality Reduction</h2>
+<p>A <strong>variational autoencoder</strong> or VAE is used to reduce the size of the state space that the policy must consider at training and inference time. The state space is represented as a small vector of floating point numbers (e.g., 20-30) taken from the VAE's bottleneck encoding (i.e., the "latent space" encoding), instead of the full image.</p>
+<p><a href="https://www.youtube.com/watch?v=uaaqyVS9-rM">This lecture</a> from Prof. Ali Ghodsi at the University of Waterloo is an excellent, brief, and self-contained introduction to the theory and implementation of VAEs. For additional reading, please consult one or more of these references (or inquire during office hours/over Slack):</p>
+<ul>
+<li>Ali Ghodsi's lecture: <a href="https://www.youtube.com/watch?v=uaaqyVS9-rM">https://www.youtube.com/watch?v=uaaqyVS9-rM</a></li>
+<li><a href="https://jaan.io/what-is-variational-autoencoder-vae-tutorial/">https://jaan.io/what-is-variational-autoencoder-vae-tutorial/</a></li>
+<li><a href="https://www.tensorflow.org/alpha/tutorials/generative/cvae">https://www.tensorflow.org/alpha/tutorials/generative/cvae</a></li>
+<li><a href="https://blog.keras.io/building-autoencoders-in-keras.html">https://blog.keras.io/building-autoencoders-in-keras.html</a></li>
+<li>Fast-forward Labs blog <a href="https://blog.fastforwardlabs.com/2016/08/12/introducing-variational-autoencoders-in-prose-and.html">Part 1</a> and <a href="https://blog.fastforwardlabs.com/2016/08/22/under-the-hood-of-the-variational-autoencoder-in.html">Part 2</a></li>
+</ul>
+<h2 id="part-1-downloading-the-donkeycar-simulation-environment">Part 1: Downloading the DonkeyCar simulation environment</h2>
 <p>The following link is a Linux build of the Unity Donkey simulation environment from the original author: </p>
 <p><a href="https://drive.google.com/open?id=1h2VfpGHlZetL5RAPZ79bhDRkvlfuB4Wb">Download on Google Drive</a></p>
 <div class="admonition note">
@@ -211,7 +223,7 @@ $ conda env create -f environment.yml
 $ conda env create -f environment-gpu.yml
 </code></pre>
 
-<h2 id="part-3-training-with-the-existing-vae">Part 3: Training with the existing VAE</h2>
+<h2 id="part-3-training-a-policy-with-a-pre-trained-vae">Part 3: Training a policy with a pre-trained VAE</h2>
 <p>First, download <a href="https://drive.google.com/open?id=1n7FosFA0hALhuESf1j1yg-hERCnfVc4b">the pre-trained VAE from the author's Google Drive folder</a> for Level0 in the same directory you cloned the repository into.</p>
 <p>Next, launch the Unity environment (if it is not already running from <strong>Part 1</strong>)</p>
 <p>To launch a newly initialized training run for the PPO algorithm across 5000 iterations, run the following command:</p>
@@ -223,7 +235,7 @@ $ conda env create -f environment-gpu.yml
 </code></pre>
 
 <h2 id="part-4-experimenting-with-deep-rl">Part 4: Experimenting with Deep RL</h2>
-<p>Once you can collect training data in the simulation, you can experiment with the existing algorithms, or try a different Deep RL algorithm altogether, such as <a href="http://spinningup.openai.com/en/latest/algorithms/trpo.html">TRPO</a>, <a href="http://spinningup.openai.com/en/latest/algorithms/td3.html">TD3</a>, etc.</p>
+<p>Once you have tried training a policy in the simulation environment, you can experiment with changing the existing algorithms, or try a different Deep RL algorithm altogether, such as <a href="http://spinningup.openai.com/en/latest/algorithms/trpo.html">TRPO</a>, <a href="http://spinningup.openai.com/en/latest/algorithms/td3.html">TD3</a>, etc.</p>
 <p>The goal of this section of the lab is to gain some intuition and experience with training the vehicle's policy using deep reinforcement learning, through modifying the existing code, hyperparameters, and algorithms, or by incorporating new algorithms. Your experimentation can target one or more threads of investigation (this is a non-exhaustive list):</p>
 <ul>
 <li>What is the effect of tuning hyperparameters on the convergence time and robustness (or lack thereof) of algorithms like PPO and SAC?</li>
@@ -231,10 +243,19 @@ $ conda env create -f environment-gpu.yml
 </ul>
 <p>Here are a few examples of things to try:</p>
 <ul>
-<li>Train a policy for random roads</li>
+<li>Train a policy that can drive on random roads (the simulator is currently set up to use the same road for every episode)</li>
 </ul>
 <p><strong>TBD</strong></p>
 <h2 id="part-5-retraining-the-vae">Part 5: Retraining the VAE</h2>
+<p>You can sample from the pre-trained VAE's manifold with the following command:</p>
+<pre><code class="shell">$ python -m vae.enjoy_latent -vae vae-level-0-dim-32.pkl
+</code></pre>
+
+<p>You can move some of the sliders around and "generate" new views of the track by running the encoded representation through the deconvolutional portion of the VAE network.  </p>
+<p><img alt="" src="../img/vaeparams.png" style="width:40%;" /></p>
+<p>See the video below for an example output:</p>
+<video controls src="../img/vae.mp4"></video>
+
 <p><strong>TBD</strong></p>
               
             </div>
