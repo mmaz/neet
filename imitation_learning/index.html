@@ -94,7 +94,7 @@
           
             <li class="toctree-l1">
 		
-    <a class="" href="../reinforcement_learning/">Reinforcement Learning</a>
+    <a class="" href="../reinforcement_learning/">Reinforcement Learning Lab</a>
 	    </li>
           
             <li class="toctree-l1">
@@ -185,27 +185,26 @@
 <p class="admonition-title">Note</p>
 <p>Even though you will be installing <code>miniconda-python-3.7</code>, we will be using Python 2.7 to define and train the PilotNet CNN model. <code>miniconda-python-3.7</code> will handle creating a Python 2.7 environment for you. Once we save a trained model (also known as saving <em>weights</em>), we can later import the saved model in a Python 2.7 ROS environment on the RACECAR.  (To note for completeness, is also possible to train a model with Python 3 and import it with Python 2)</p>
 </div>
-<p><strong>TBD:</strong>  potentially switch to rapids/pytorch</p>
 <p>Once you have installed miniconda, clone the following repository locally:</p>
 <pre><code class="shell">$ git clone https://github.com/mmaz/imitation_learning_lab
 $ cd imitation_learning_lab/
 </code></pre>
 
 <p>Next, we will install TensorFlow using the <code>conda</code> command. There are <strong>two</strong> options:</p>
-<pre><code>* If you **do not** have a GPU on your computer:
-
-  ```shell
-  # Use TensorFlow without a GPU
-  $ conda env create -f environment.yml 
-  ```
-
-* Otherwise, if you **do** have a GPU:
-
-  ```shell
-  # Use TensorFlow with a GPU
-  $ conda env create -f environment-gpu.yml
-  ```
+<ul>
+<li>If you <strong>do not</strong> have a GPU on your computer:</li>
+</ul>
+<pre><code class="shell"># Use TensorFlow without a GPU
+$ conda env create -f environment.yml 
 </code></pre>
+
+<ul>
+<li>Otherwise, if you <strong>do</strong> have a GPU:</li>
+</ul>
+<pre><code class="shell"># Use TensorFlow with a GPU
+$ conda env create -f environment-gpu.yml
+</code></pre>
+
 <h3 id="udacity-self-driving-car-simulator">Udacity self-driving-car simulator</h3>
 <p>Download the <strong>Udacity Term 1</strong> simulator for your platform:</p>
 <ul>
