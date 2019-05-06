@@ -106,7 +106,7 @@ $ conda env create -f environment.yml
 $ conda env create -f environment-gpu.yml
 ```
 
-## Part 3: Training with the existing VAE
+## Part 3: Training a policy with a pre-trained VAE
 
 First, download [the pre-trained VAE from the author's Google Drive folder](https://drive.google.com/open?id=1n7FosFA0hALhuESf1j1yg-hERCnfVc4b) for Level0 in the same directory you cloned the repository into.
 
@@ -134,12 +134,25 @@ The goal of this section of the lab is to gain some intuition and experience wit
 * What changes to the algorithm can be made to improve convergence behaviors and the robustness of the learned policy?
  
 Here are a few examples of things to try:
-
-* 
+  
 * Train a policy that can drive on random roads (the simulator is currently set up to use the same road for every episode)
 
 **TBD**
 
 ## Part 5: Retraining the VAE
+
+You can sample from the pre-trained VAE's manifold with the following command:
+
+```shell
+$ python -m vae.enjoy_latent -vae vae-level-0-dim-32.pkl
+```
+
+You can move some of the sliders around and "generate" new views of the track by running the encoded representation through the deconvolutional portion of the VAE network.  
+
+![](img/vaeparams.png){: style="width:40%;" }
+
+See the video below for an example output:
+
+<video controls src="../img/vae.mp4"></video>
 
 **TBD**
