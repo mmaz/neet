@@ -469,11 +469,7 @@ To execute a trained model, you will need to run the following scripts:
 !!! note
     We use `zmq` to send steering angle messages from our Python3 script running inference with TensorFlow, over to a Python2-ROS script that commands the car to drive.
 
-You will first need to [replace the model name here](https://github.com/mmaz/imitation_learning_lab/blob/ee982299cdfe81ddf59541f696fe2f1b8f9ba104/infer_RACECAR.py#L23) with your trained model:
-
-```python
-MODEL='model_name.h5'
-```
+You will first need to copy your saved model weights to the RACECAR (e.g., using SCP). You will specify the model location using [this command-line argument](https://github.com/mmaz/imitation_learning_lab/blob/6dd9a61f2c687888de80afe94c2df139490828cd/infer_RACECAR.py#L27).
 
 Next, if it has changed (due to a reboot or unplugging the cameras), remember [to **modify the video ID** to the center camera here](https://github.com/mmaz/imitation_learning_lab/blob/ee982299cdfe81ddf59541f696fe2f1b8f9ba104/infer_RACECAR.py#L19), or verify the current ID is correct using [`video_id_RACECAR.py`](https://github.com/mmaz/imitation_learning_lab/blob/master/video_id_RACECAR.py):
 
@@ -487,7 +483,7 @@ CENTER_CAMERA_VIDEO_ID = 1 # /dev/video*
 Then, in one terminal, run:
 
 ```shell
-$ python3 infer_RACECAR.py
+$ python3 infer_RACECAR.py --model path_to_model.h5
 ```
 
 Ensure you are using **python3** above. In another terminal, use **python2** and run:
