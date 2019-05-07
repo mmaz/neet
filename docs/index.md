@@ -1,7 +1,7 @@
-# MIT NEET Labs: Spring 2019
+# MIT NEET Machine Learning Labs 
 
-!!! danger "FYI"
-    These labs are in-progress!
+## Spring 2019
 
 * [**Imitation Learning**](imitation_learning.md) Lab
 * [**Reinforcement Learning**](reinforcement_learning.md) Lab
+* [**NEET Server Instructions**](server.md)

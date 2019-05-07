@@ -8,7 +8,7 @@ Reinforcement learning is distinct from imitation learning: here, the robot lear
 
 This lab relies on providing the robot with a simulation environment to use as a sandbox for exploration. In particular, we will use a Unity-based simulation environment originally developed by [Tawn Kramer](https://github.com/tawnkramer/) for the [DonkeyCar RC platform](https://www.donkeycar.com/).
 
-This lab exercise relies on a Deep RL demonstration by [Antonin Raffin](https://github.com/araffin), which uses [*Proximal Policy Optimization (PPO)*](https://spinningup.openai.com/en/latest/algorithms/ppo.html) and [*Soft Actor-Critic (SAC)*](https://spinningup.openai.com/en/latest/algorithms/sac.html) to quickly train the simulated DonkeyCar to drive on a randomly generated track. This demonstration is itself a fork of an earlier repository by [Roma Sokolkov](https://github.com/r7vme), which leveraged another Deep RL algorithm [*Deep Deterministic Policy Gradient*](https://spinningup.openai.com/en/latest/algorithms/ddpg.html) (DDPG) in the simulator.
+This lab exercise relies on a Deep RL demonstration by [Antonin Raffin](https://github.com/araffin), which uses [*Proximal Policy Optimization (PPO)*](https://spinningup.openai.com/en/latest/algorithms/ppo.html) and [*Soft Actor-Critic (SAC)*](https://spinningup.openai.com/en/latest/algorithms/sac.html) to quickly train the simulated DonkeyCar to drive on a randomly generated track (and also leverages a variational autoencoder based on code from [hardmaru](http://blog.otoro.net//2018/06/09/world-models-experiments/)). This demonstration is itself a fork of an earlier repository by [Roma Sokolkov](https://github.com/r7vme), which leveraged another Deep RL algorithm [*Deep Deterministic Policy Gradient*](https://spinningup.openai.com/en/latest/algorithms/ddpg.html) (DDPG) in the simulator.
 
 It is instructive to review [Antonin Raffin's blogpost](https://medium.com/@araffin/learning-to-drive-smoothly-in-minutes-450a7cdb35f4) regarding the testing he conducted, for ideas and background, as you work on the lab.
 
@@ -50,6 +50,7 @@ A **variational autoencoder** or VAE is used to reduce the size of the state spa
 * <https://www.tensorflow.org/alpha/tutorials/generative/cvae>
 * <https://blog.keras.io/building-autoencoders-in-keras.html>
 * Fast-forward Labs blog [Part 1](https://blog.fastforwardlabs.com/2016/08/12/introducing-variational-autoencoders-in-prose-and.html) and [Part 2](https://blog.fastforwardlabs.com/2016/08/22/under-the-hood-of-the-variational-autoencoder-in.html)
+* [hardmaru](https://github.com/hardmaru)'s series of posts on world models: <http://blog.otoro.net//2018/06/09/world-models-experiments/>
 
 ## Part 1: Downloading the DonkeyCar simulation environment
 
@@ -112,7 +113,7 @@ First, download [the pre-trained VAE from the author's Google Drive folder](http
 
 Next, launch the Unity environment (if it is not already running from **Part 1**)
 
-To launch a newly initialized training run for the PPO algorithm across 5000 iterations, run the following command:
+To launch a newly initialized training run for the PPO algorithm across 5000 iterations in *Level 0* of the simulator, run the following command:
 
 ```shell
 $ python train.py --algo ppo -vae vae-level-0-dim-32.pkl -n 5000
@@ -124,20 +125,32 @@ Alternatively, to launch a training run for *Soft Actor-Critic* (SAC):
 $ python train.py --algo sac -vae vae-level-0-dim-32.pkl -n 5000
 ```
 
+Is 5000 steps enough to train a good policy for PPO or SAC? How frequently does training converge on a good policy (versus performance collapse)?
+
 ## Part 4: Experimenting with Deep RL
 
 Once you have tried training a policy in the simulation environment, you can experiment with changing the existing algorithms, or try a different Deep RL algorithm altogether, such as [TRPO](http://spinningup.openai.com/en/latest/algorithms/trpo.html), [TD3](http://spinningup.openai.com/en/latest/algorithms/td3.html), etc.
 
 The goal of this section of the lab is to gain some intuition and experience with training the vehicle's policy using deep reinforcement learning, through modifying the existing code, hyperparameters, and algorithms, or by incorporating new algorithms. Your experimentation can target one or more threads of investigation (this is a non-exhaustive list):
 
+* How can the training performance (accuracy/speed/etc) and learned policy's effectiveness be visualized or quantified?
 * What is the effect of tuning hyperparameters on the convergence time and robustness (or lack thereof) of algorithms like PPO and SAC?
 * What changes to the algorithm can be made to improve convergence behaviors and the robustness of the learned policy?
  
-Here are a few examples of things to try:
+Here are a few examples of possible things to try (again, non-exhaustive):
   
+* Visualize the policy's training performance (e.g., with [tensorboard](https://www.tensorflow.org/guide/summaries_and_tensorboard))
+* Visualize the value network's training performance (if you are using an actor-critic algorithm like PPO)
+* Alter the hand-crafted [reward function](https://github.com/mmaz/learning-to-drive-in-5-minutes/blob/89a3b2ca040014cb2193ad3fe88636de146f49ce/donkey_gym/envs/donkey_sim.py#L219-L234) by stating a hypothesis, changing the reward calculation, and retraining.
+    * See [Antonin Raffin's blogpost](https://medium.com/@araffin/learning-to-drive-smoothly-in-minutes-450a7cdb35f4) for his explanation of the current reward function
+    * An example hypothesis: perhaps the current implementation of the 'smooth' steering constraint is leading to frequent performance collapse - an alternative implementation may do better.
+* Quantify the variance of a trained policy
+    * E.g., what is the distribution of collected reward across multiple trajectories using a trained policy? Can this be used to inform further training of the policy?
+* Change the network to use pixels directly instead of using the VAE encoding.
+    * Suggestion: Consider using a CNN instead of a dense network, and explore augmentation/subsampling.
 * Train a policy that can drive on random roads (the simulator is currently set up to use the same road for every episode)
+* Replace the pre-trained VAE with one you trained yourself on collected data in the simulator (this is the first component of **Part 5** below)
 
-**TBD**
 
 ## Part 5: Retraining the VAE
 
@@ -155,4 +168,17 @@ See the video below for an example output:
 
 <video controls src="../img/vae.mp4"></video>
 
-**TBD**
+To get some hands-on experience with VAEs, collect a new set of images and train a new VAE, instead of using the pre-trained VAE. Optionally consider using a different network architecture (for instance, some recent VAE research has focused on improved disentangling of latent factors, such as [this IBM paper](https://www.ibm.com/blogs/research/2018/05/disentanglement-deep-learning/) among others).
+
+You can use the [VAE training script](https://github.com/mmaz/learning-to-drive-in-5-minutes/blob/master/vae/train.py) and train on new data via:
+
+```shell
+$ python -m vae.train --n-epochs 50 --verbose 0 --z-size 64 -f path-to-record/folder/
+```
+
+where `z-size` specifies the number of latent factors in the bottleneck.
+
+Next, try to train a new VAE network on real-world data, e.g., using the camera images you collected in the [Imitation Learning Lab](imitation_learning.md) from a classroom or the full Stata basement track. Visualize samples from the manifold of this VAE. 
+
+!!! note "Optional Exercise"
+    If you are feeling particularly eager and have the time, you could use this VAE to train the RACECAR in a classroom or even in Stata basement! You might want to set up a few extra Traxxas batteries to keep charging and swapping out, because this could take an hour or more of driving on-policy, physically resetting when the car gets near an obstacle or veers off course, retraining, and repeating.
