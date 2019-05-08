@@ -143,6 +143,8 @@
                 <h1 id="reinforcement-learning-lab">Reinforcement Learning Lab</h1>
 <h2 id="introduction">Introduction</h2>
 <p><strong>Objective:</strong> This lab exercise introduces <em>deep reinforcement learning</em> (Deep RL) for autonomous driving in simulation, using only a camera for sensing.</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/bWiFDPhTV4k" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 <p>Reinforcement learning is distinct from imitation learning: here, the robot learns to explore the environment on its own, with practically no prior information about the world or itself. Through exploration and reinforcement of behaviors which net reward, rather than human-provided examples of behavior to imitate, a robot has the potential to learn novel, optimal techniques which exceed the abilities of humans. Atari games, Go, and StarCraft are a few well-known settings in which Deep RL algorithms have approached or surpassed human expertise.</p>
 <p>This lab relies on providing the robot with a simulation environment to use as a sandbox for exploration. In particular, we will use a Unity-based simulation environment originally developed by <a href="https://github.com/tawnkramer/">Tawn Kramer</a> for the <a href="https://www.donkeycar.com/">DonkeyCar RC platform</a>.</p>
 <p>This lab exercise relies on a Deep RL demonstration by <a href="https://github.com/araffin">Antonin Raffin</a>, which uses <a href="https://spinningup.openai.com/en/latest/algorithms/ppo.html"><em>Proximal Policy Optimization (PPO)</em></a> and <a href="https://spinningup.openai.com/en/latest/algorithms/sac.html"><em>Soft Actor-Critic (SAC)</em></a> to quickly train the simulated DonkeyCar to drive on a randomly generated track (and also leverages a variational autoencoder based on code from <a href="http://blog.otoro.net//2018/06/09/world-models-experiments/">hardmaru</a>). This demonstration is itself a fork of an earlier repository by <a href="https://github.com/r7vme">Roma Sokolkov</a>, which leveraged another Deep RL algorithm <a href="https://spinningup.openai.com/en/latest/algorithms/ddpg.html"><em>Deep Deterministic Policy Gradient</em></a> (DDPG) in the simulator.</p>
@@ -230,7 +232,7 @@ $ conda env create -f environment-gpu.yml
 </code></pre>
 
 <h2 id="part-3-training-a-policy-with-a-pre-trained-vae">Part 3: Training a policy with a pre-trained VAE</h2>
-<p>First, download <a href="https://drive.google.com/open?id=1n7FosFA0hALhuESf1j1yg-hERCnfVc4b">the pre-trained VAE from the author's Google Drive folder</a> for Level0 in the same directory you cloned the repository into.</p>
+<p>First, download <a href="https://drive.google.com/open?id=1n7FosFA0hALhuESf1j1yg-hERCnfVc4b">the pre-trained VAE from the author's Google Drive folder</a> for <em>Level 0</em> in the same directory you cloned the repository into.</p>
 <p>Next, launch the Unity environment (if it is not already running from <strong>Part 1</strong>)</p>
 <p>To launch a newly initialized training run for the PPO algorithm across 5000 iterations in <em>Level 0</em> of the simulator, run the following command:</p>
 <pre><code class="shell">$ python train.py --algo ppo -vae vae-level-0-dim-32.pkl -n 5000
@@ -240,7 +242,27 @@ $ conda env create -f environment-gpu.yml
 <pre><code class="shell">$ python train.py --algo sac -vae vae-level-0-dim-32.pkl -n 5000
 </code></pre>
 
-<p>Is 5000 steps enough to train a good policy for PPO or SAC? How frequently does training converge on a good policy (versus performance collapse)?</p>
+<p>For <em>Level 0</em>, the simulator will select a random track layout, and the Gym API will be used to reset the simulator using this track layout for each episode when training a new policy.</p>
+<table>
+<thead>
+<tr>
+<th>Example Track Layout 1</th>
+<th>Example Track Layout 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="" src="../img/random-track-1.png" /></td>
+<td><img alt="" src="../img/random-track-2.png" /></td>
+</tr>
+</tbody>
+</table>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/rolQ_wvX9O4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<div class="admonition note">
+<p class="admonition-title">Question</p>
+<p>In addition to accumulated reward, what metrics could be used for measuring a policy's performance? Are 5000 steps enough to train a good policy for PPO or SAC? Across different training runs (each starting from a randomly initialized policy), how frequently will PPO or SAC converge on a good policy, versus suffering from performance collapse?</p>
+</div>
 <h2 id="part-4-experimenting-with-deep-rl">Part 4: Experimenting with Deep RL</h2>
 <p>Once you have tried training a policy in the simulation environment, you can experiment with changing the existing algorithms, or try a different Deep RL algorithm altogether, such as <a href="http://spinningup.openai.com/en/latest/algorithms/trpo.html">TRPO</a>, <a href="http://spinningup.openai.com/en/latest/algorithms/td3.html">TD3</a>, etc.</p>
 <p>The goal of this section of the lab is to gain some intuition and experience with training the vehicle's policy using deep reinforcement learning, through modifying the existing code, hyperparameters, and algorithms, or by incorporating new algorithms. Your experimentation can target one or more threads of investigation (this is a non-exhaustive list):</p>
