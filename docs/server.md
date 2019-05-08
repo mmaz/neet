@@ -54,7 +54,7 @@ Host neet
     ForwardX11 yes
     IdentityFile ~/.ssh/id_rsa
     LocalForward 8888 127.0.0.1:8888
-    ControlPath ~/.ssh/controlmasters/%r@%h:%p
+    ControlPath ~/.ssh/controlmasters_%r@%h:%p
     ControlMaster auto
 ```
 
