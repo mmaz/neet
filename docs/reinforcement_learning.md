@@ -4,6 +4,8 @@
 
 **Objective:** This lab exercise introduces *deep reinforcement learning* (Deep RL) for autonomous driving in simulation, using only a camera for sensing.
 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/bWiFDPhTV4k" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 Reinforcement learning is distinct from imitation learning: here, the robot learns to explore the environment on its own, with practically no prior information about the world or itself. Through exploration and reinforcement of behaviors which net reward, rather than human-provided examples of behavior to imitate, a robot has the potential to learn novel, optimal techniques which exceed the abilities of humans. Atari games, Go, and StarCraft are a few well-known settings in which Deep RL algorithms have approached or surpassed human expertise.
 
 This lab relies on providing the robot with a simulation environment to use as a sandbox for exploration. In particular, we will use a Unity-based simulation environment originally developed by [Tawn Kramer](https://github.com/tawnkramer/) for the [DonkeyCar RC platform](https://www.donkeycar.com/).
@@ -109,7 +111,7 @@ $ conda env create -f environment-gpu.yml
 
 ## Part 3: Training a policy with a pre-trained VAE
 
-First, download [the pre-trained VAE from the author's Google Drive folder](https://drive.google.com/open?id=1n7FosFA0hALhuESf1j1yg-hERCnfVc4b) for Level0 in the same directory you cloned the repository into.
+First, download [the pre-trained VAE from the author's Google Drive folder](https://drive.google.com/open?id=1n7FosFA0hALhuESf1j1yg-hERCnfVc4b) for *Level 0* in the same directory you cloned the repository into.
 
 Next, launch the Unity environment (if it is not already running from **Part 1**)
 
@@ -125,7 +127,17 @@ Alternatively, to launch a training run for *Soft Actor-Critic* (SAC):
 $ python train.py --algo sac -vae vae-level-0-dim-32.pkl -n 5000
 ```
 
-Is 5000 steps enough to train a good policy for PPO or SAC? How frequently does training converge on a good policy (versus performance collapse)?
+For *Level 0*, the simulator will select a random track layout, and the Gym API will be used to reset the simulator using this track layout for each episode when training a new policy.
+
+| Example Track Layout 1 | Example Track Layout 2 |
+| ----------- | -----------  |
+| ![](img/random-track-1.png) | ![](img/random-track-2.png) |
+
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/rolQ_wvX9O4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+!!! note "Question"
+    In addition to accumulated reward, what metrics could be used for measuring a policy's performance? Are 5000 steps enough to train a good policy for PPO or SAC? Across different training runs (each starting from a randomly initialized policy), how frequently will PPO or SAC converge on a good policy, versus suffering from performance collapse?
 
 ## Part 4: Experimenting with Deep RL
 
