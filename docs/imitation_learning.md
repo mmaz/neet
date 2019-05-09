@@ -280,9 +280,7 @@ def batch_generator(image_paths, steering_angles, batch_size):
         for index in np.random.permutation(len(image_paths)):
 
             ##############################################
-            # TODO: add your augmentation code here!  ####
-            # NOTE: you may want to disable           ####
-            #       augmentation when validating!     ####
+            # TODO: add your augmentation code here   ####
             ##############################################
             
             image = cv.imread(image_paths[index])
@@ -308,6 +306,23 @@ model.fit_generator(generator=batch_generator(X_train, y_train, batch_size=BATCH
                     callbacks=[checkpoint],
                     verbose=1)
 ```
+
+### Driving your car in simulation
+
+After starting the Udacity simulator in **Autonomous Mode** you can use your trained model to drive the car via:
+
+```shell
+$ python drive_udacity.py $MODEL_NAME
+```
+
+where `$MODEL_NAME` is the name of the saved model checkpoint. For instance, if you used the following checkpoint naming scheme:
+
+```python
+ModelCheckpoint('imitationlearning-{epoch:03d}.h5'
+    ...)
+```
+
+Then `imitationlearning-010.h5` will be the model saved after the tenth epoch of training.
 
 ### Image Augmentation
 

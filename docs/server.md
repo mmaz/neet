@@ -3,9 +3,9 @@
 !!! danger "Keep this in mind!"
      The NEET Server is a shared resource! Coordinate the times you are using the server with the other NEET teams so that you do not overlap. And **remember to shut down your Jupyter Notebook or training script** after you are done. Do not leave a training script running - it will reserve all available GPU memory, and prevent other teams from training.
 
-     If you and another team agree beforehand, you can limit the memory TensorFlow allocates while training, and both teams can train on the server simultaneously. Still, in this case, remember to shut down jupyter or your python training script when you are done.
+     **Concurrent usage by multiple teams:** If you and another team agree beforehand, you can [limit the memory TensorFlow allocates while training](https://www.tensorflow.org/guide/using_gpu#allowing_gpu_memory_growth), and both teams can train on the server simultaneously. Again remember to shut down jupyter and/or your python training scripts when you are done. Additionally, note that if both teams want to concurrently run Jupyter notebook instances, you cannot share the same port (by default, `8888`). Different ports will be auto-assigned. You can manually specify a port with `jupyter notebook --no-browser --port ####`, for example, `--port 8765`). You will need to ensure the port for your notebook instance is forwarded via ssh.
 
-     Ask the instructors before running any commands with `sudo` rights.
+     Please ask the instructors before running any commands with `sudo` rights.
 
      Lastly, please do **not** reboot the server! Again, ask if you have questions.
 
