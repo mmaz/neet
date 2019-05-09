@@ -430,9 +430,7 @@ def batch_generator(image_paths, steering_angles, batch_size):
         for index in np.random.permutation(len(image_paths)):
 
             ##############################################
-            # TODO: add your augmentation code here!  ####
-            # NOTE: you may want to disable           ####
-            #       augmentation when validating!     ####
+            # TODO: add your augmentation code here   ####
             ##############################################
 
             image = cv.imread(image_paths[index])
@@ -459,6 +457,17 @@ model.fit_generator(generator=batch_generator(X_train, y_train, batch_size=BATCH
                     verbose=1)
 </code></pre>
 
+<h3 id="driving-your-car-in-simulation">Driving your car in simulation</h3>
+<p>After starting the Udacity simulator in <strong>Autonomous Mode</strong> you can use your trained model to drive the car via:</p>
+<pre><code class="shell">$ python drive_udacity.py $MODEL_NAME
+</code></pre>
+
+<p>where <code>$MODEL_NAME</code> is the name of the saved model checkpoint. For instance, if you used the following checkpoint naming scheme:</p>
+<pre><code class="python">ModelCheckpoint('imitationlearning-{epoch:03d}.h5'
+    ...)
+</code></pre>
+
+<p>Then <code>imitationlearning-010.h5</code> will be the model saved after the tenth epoch of training.</p>
 <h3 id="image-augmentation">Image Augmentation</h3>
 <p>You will want to add some data augmentation to help your model generalize past the specific examples you have collected in the simulator (and on the actual RACECAR). Some example transformations to incorporate:</p>
 <p><strong>Center Image</strong></p>
