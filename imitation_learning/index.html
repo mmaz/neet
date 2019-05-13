@@ -555,7 +555,12 @@ model.fit_generator(generator=batch_generator(X_train, y_train, batch_size=BATCH
 <p class="admonition-title">Note</p>
 <p>Make sure to use <strong><code>python2</code></strong> here for recording the images and steering angle data - note that we will <strong>not</strong> use <code>python2</code> in the next section to access the cameras. TensorFlow is only available in the car's <code>python3</code> environment, and ROS is only available in our <code>python2</code> environment. For recording, we do not need access to TensorFlow, only OpenCV. For autonomous driving with both TensorFlow and ROS, we will see how to work around this inconvenience in the next section via <code>zmq</code>.</p>
 </div>
-<p>Note that you will need to change the <strong>Video Device IDs</strong> to the appropriate values, depending on which order the webcams were plugged in and registered by Linux.</p>
+<p>When you are done collecting data, press <code>ctrl-c</code> to terminate collection:</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>After you are done with data collection, you might see an error like <code>TypeError: img data type = 17 is not supported</code> printed to the terminal when you <code>ctrl-c</code> - this is harmless and you can safely ignore this error, which happens because the last jpg was not saved to disk due to the <code>ctrl-c</code> interrupt. The rest of the jpgs should be in the saved folder along with a CSV file of jpg filenames, steering angles, and velocities.</p>
+</div>
+<p>Note that <strong>before recording any data</strong> you will need to change the <strong>Video Device IDs</strong> to the appropriate values, depending on which order the webcams were plugged in and registered by Linux.</p>
 <p>Set the appropriate values for your car in <a href="https://github.com/mmaz/imitation_learning_lab/blob/6dd9a61f2c687888de80afe94c2df139490828cd/cameras_RACECAR.py#L3-L5"><code>camera_RACECAR.py</code></a></p>
 <pre><code class="python">class Video:
     # dev/video*
