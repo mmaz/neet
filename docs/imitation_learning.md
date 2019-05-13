@@ -444,7 +444,12 @@ $ python2 record_RACECAR.py
 !!! note
     Make sure to use **`python2`** here for recording the images and steering angle data - note that we will **not** use `python2` in the next section to access the cameras. TensorFlow is only available in the car's `python3` environment, and ROS is only available in our `python2` environment. For recording, we do not need access to TensorFlow, only OpenCV. For autonomous driving with both TensorFlow and ROS, we will see how to work around this inconvenience in the next section via `zmq`.
 
-Note that you will need to change the **Video Device IDs** to the appropriate values, depending on which order the webcams were plugged in and registered by Linux.
+When you are done collecting data, press `ctrl-c` to terminate collection:
+
+!!! note
+    After you are done with data collection, you might see an error like `TypeError: img data type = 17 is not supported` printed to the terminal when you `ctrl-c` - this is harmless and you can safely ignore this error, which happens because the last jpg was not saved to disk due to the `ctrl-c` interrupt. The rest of the jpgs should be in the saved folder along with a CSV file of jpg filenames, steering angles, and velocities.
+
+Note that **before recording any data** you will need to change the **Video Device IDs** to the appropriate values, depending on which order the webcams were plugged in and registered by Linux.
 
 Set the appropriate values for your car in [`camera_RACECAR.py`](https://github.com/mmaz/imitation_learning_lab/blob/6dd9a61f2c687888de80afe94c2df139490828cd/cameras_RACECAR.py#L3-L5)
 
